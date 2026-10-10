@@ -1,0 +1,20 @@
+# Quadlet: phpMyAdmin (Server 3, internal only via tunnel db.*)
+# Salin ke /etc/containers/systemd/phpmyadmin.container
+[Unit]
+Description=PixiCDN phpMyAdmin
+After=mariadb.service
+Wants=network-online.target
+
+[Container]
+Image=docker.io/phpmyadmin:5
+ContainerName=phpmyadmin
+PublishPort=127.0.0.1:8081:80
+Environment=PMA_HOST=192.168.1.50
+Environment=PMA_PORT=3306
+Environment=UPLOAD_LIMIT=32M
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

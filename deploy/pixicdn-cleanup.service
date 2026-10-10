@@ -1,0 +1,7 @@
+[Unit]
+Description=PixiCDN cleanup harian (expired, purge, log)
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caddy/html/pixicdn
+ExecStart=/usr/bin/php /opt/caddy/html/pixicdn/cron/cleanup.php

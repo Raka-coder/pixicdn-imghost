@@ -1,0 +1,20 @@
+# Quadlet: PHP-FPM 8.2 (Server 2) — image custom dengan ext pdo_mysql,gd,fileinfo,mbstring
+# Build: podman build -t pixicdn-php -f /opt/php/Containerfile /opt/php
+# Salin ke /etc/containers/systemd/phpfpm.container
+[Unit]
+Description=PixiCDN PHP-FPM
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=localhost/pixicdn-php:latest
+ContainerName=phpfpm
+PublishPort=127.0.0.1:9000:9000
+Volume=/opt/caddy/html:/srv:z
+Environment=TZ=Asia/Jakarta
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

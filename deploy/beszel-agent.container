@@ -1,0 +1,19 @@
+# Quadlet: Beszel Agent (Server 2 & 3, monitoring)
+# Isi KEY di /opt/beszel/agent.env. Salin ke /etc/containers/systemd/beszel-agent.container
+[Unit]
+Description=Beszel Agent
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=docker.io/henrygd/beszel-agent:latest
+ContainerName=beszel-agent
+PublishPort=45876:45876
+Volume=/opt/beszel/agent.env:/etc/beszel/agent.env:ro,Z
+Volume=/var/run/podman/podman.sock:/var/run/podman/podman.sock:ro
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

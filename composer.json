@@ -1,0 +1,17 @@
+{
+    "name": "pixicdn/pixicdn",
+    "description": "PixiCDN - self-hosted image hosting with direct link",
+    "type": "project",
+    "require": {
+        "php": ">=8.2",
+        "aws/aws-sdk-php": "^3.0"
+    },
+    "autoload": {
+        "files": [
+            "includes/helpers.php"
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}

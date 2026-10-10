@@ -1,0 +1,19 @@
+# Quadlet: FileBrowser (Server 2, internal via tunnel files.*)
+# Salin ke /etc/containers/systemd/filebrowser.container
+[Unit]
+Description=PixiCDN FileBrowser
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=docker.io/filebrowser/filebrowser:latest
+ContainerName=filebrowser
+PublishPort=127.0.0.1:8080:80
+Volume=/opt/caddy/html:/srv:z
+Volume=/opt/filebrowser/data:/database:Z
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

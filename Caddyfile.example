@@ -1,0 +1,25 @@
+# Caddyfile contoh untuk PixiCDN (lokal / Server 2)
+# Salin sesuai kebutuhan ke /opt/caddy/Caddyfile
+
+pixicdn.erdtreeproject.my.id {
+    root * /opt/caddy/html/pixicdn
+    encode gzip
+    php_fastcgi 127.0.0.1:9000
+
+    # Security headers (dari architecture.md §6.4)
+    header {
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    }
+
+    # Blokir file sensitif (dari rules.md §6.2)
+    @blocked {
+        path /config.php /vendor/* /logs/* /migrations/* *.sql
+    }
+    respond @blocked 403
+
+    file_server
+}

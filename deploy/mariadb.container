@@ -1,0 +1,20 @@
+# Quadlet: MariaDB 11 (Server 3, 192.168.1.50)
+# Kredensial via /opt/mariadb/env (TIDAK di-commit). Salin ke /etc/containers/systemd/mariadb.container
+[Unit]
+Description=PixiCDN MariaDB
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=docker.io/library/mariadb:11
+ContainerName=mariadb
+PublishPort=127.0.0.1:3306:3306
+Volume=/opt/mariadb/data:/var/lib/mysql:Z
+Volume=/opt/mariadb/conf:/etc/mysql/conf.d:ro,Z
+EnvironmentFile=/opt/mariadb/env
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

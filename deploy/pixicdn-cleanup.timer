@@ -1,0 +1,9 @@
+[Unit]
+Description=Jadwal cleanup PixiCDN 02:00 harian
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
