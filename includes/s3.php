@@ -55,10 +55,14 @@ function getS3Client(): S3Client
 function s3_put(string $local_path, string $s3_key): bool
 {
     try {
+        $mime = mime_content_type($local_path) ?: 'application/octet-stream';
         getS3Client()->putObject([
             'Bucket' => S3_BUCKET,
             'Key' => $s3_key,
-            'Body' => fopen($local_path, 'r'),
+            'SourceFile' => $local_path,
+            'ContentType' => $mime,
+            'ContentDisposition' => 'inline',
+            'CacheControl' => 'public, max-age=31536000',
         ]);
         return true;
     } catch (S3Exception $e) {
