@@ -55,4 +55,8 @@ echo "view_logs_cleaned=$views" . PHP_EOL;
 $api = $pdo->exec('DELETE FROM api_logs WHERE created_at < DATE_SUB(NOW(), INTERVAL 90 DAY) LIMIT 1000');
 echo "api_logs_cleaned=$api" . PHP_EOL;
 
+// 6. rate_limits window kedaluwarsa
+$rates = $pdo->exec('DELETE FROM rate_limits WHERE window_end < NOW()');
+echo "rate_limits_cleaned=$rates" . PHP_EOL;
+
 echo "OK cleanup" . PHP_EOL;

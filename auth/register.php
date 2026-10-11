@@ -10,10 +10,11 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
-require_once dirname(__DIR__) . '/config.example.php';
 if (is_file(dirname(__DIR__) . '/config.php')) {
     require_once dirname(__DIR__) . '/config.php';
 }
+require_once dirname(__DIR__) . '/config.example.php'; // dev-fill saja, guarded defined()
+require_once dirname(__DIR__) . '/includes/helpers.php';
 require_once dirname(__DIR__) . '/includes/db.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
 
@@ -26,6 +27,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrf($_POST['csrf_token'] ?? '')) {
         $error = 'Token keamanan tidak valid. Muat ulang halaman.';
     } else {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        try {
+            $allowed = check_rate_limit('register:' . $ip, 'register', 5);
+        } catch (PDOException $e) {
+            error_log('Register rate gagal: ' . $e->getMessage());
+            $allowed = true;
+        }
+        if (!$allowed) {
+            $error = 'Terlalu banyak percobaan daftar. Coba lagi nanti.';
+        } else {
         $username = trim($_POST['username'] ?? '');
         $password = $_POST['password'] ?? '';
         $confirm = $_POST['confirm'] ?? '';
@@ -44,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 error_log('Register gagal: ' . $e->getMessage());
                 $error = 'Terjadi kesalahan pada sistem. Silakan coba lagi.';
             }
+        }
         }
     }
 }

@@ -10,10 +10,11 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
-require_once dirname(__DIR__) . '/config.example.php';
 if (is_file(dirname(__DIR__) . '/config.php')) {
     require_once dirname(__DIR__) . '/config.php';
 }
+require_once dirname(__DIR__) . '/config.example.php'; // dev-fill saja, guarded defined()
+require_once dirname(__DIR__) . '/includes/helpers.php';
 require_once dirname(__DIR__) . '/includes/db.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
 require_once dirname(__DIR__) . '/includes/upload.php'; // check_rate_limit

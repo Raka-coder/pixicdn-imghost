@@ -1,8 +1,10 @@
 .env
 config.php
 CREDENTIALS.md
+docs/
 logs/*.log
 logs/*.txt
+*.log
 vendor/
 uploads/
 migrations/*.local.sql

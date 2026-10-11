@@ -26,12 +26,10 @@ function getS3Client(): S3Client
         return $client;
     }
 
-    if (!defined('S3_ENDPOINT')) {
-        require_once dirname(__DIR__) . '/config.example.php';
-        if (is_file(dirname(__DIR__) . '/config.php')) {
-            require_once dirname(__DIR__) . '/config.php';
-        }
+    if (is_file(dirname(__DIR__) . '/config.php')) {
+        require_once dirname(__DIR__) . '/config.php';
     }
+    require_once dirname(__DIR__) . '/config.example.php'; // dev-fill saja, guarded defined()
 
     $client = new S3Client([
         'version' => 'latest',

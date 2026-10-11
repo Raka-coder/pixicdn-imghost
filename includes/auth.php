@@ -10,6 +10,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/helpers.php';
 
 /**
  * Validasi username: 3-30 karakter, huruf/angka/underscore.
@@ -46,27 +47,6 @@ function generate_recovery_code(): string
         $code .= $alphabet[random_int(0, strlen($alphabet) - 1)];
     }
     return $code;
-}
-
-/**
- * Start session aman (httponly, secure, samesite=Lax).
- *
- * @return void
- */
-function start_secure_session(): void
-{
-    if (session_status() === PHP_SESSION_ACTIVE) {
-        return;
-    }
-    session_name(SESSION_NAME);
-    session_set_cookie_params([
-        'lifetime' => 3600,
-        'path' => '/',
-        'secure' => isset($_SERVER['HTTPS']),
-        'httponly' => true,
-        'samesite' => 'Lax',
-    ]);
-    session_start();
 }
 
 /**

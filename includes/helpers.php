@@ -34,15 +34,35 @@ function sanitize(string $value): string
 }
 
 /**
+ * Start session aman (httponly, secure, samesite=Lax).
+ * Kanonis: semua pemanggil session/CSRF lewat fungsi ini.
+ *
+ * @return void
+ */
+function start_secure_session(): void
+{
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        return;
+    }
+    session_name(defined('SESSION_NAME') ? SESSION_NAME : 'PIXICDN_SESSION');
+    session_set_cookie_params([
+        'lifetime' => 3600,
+        'path' => '/',
+        'secure' => isset($_SERVER['HTTPS']),
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+    session_start();
+}
+
+/**
  * Ambil atau buat CSRF token sesi.
  *
  * @return string Token CSRF
  */
 function csrfToken(): string
 {
-    if (session_status() !== PHP_SESSION_ACTIVE) {
-        session_start();
-    }
+    start_secure_session();
     if (empty($_SESSION[CSRF_TOKEN_KEY])) {
         $_SESSION[CSRF_TOKEN_KEY] = bin2hex(random_bytes(32));
     }
@@ -57,9 +77,7 @@ function csrfToken(): string
  */
 function verifyCsrf(string $token): bool
 {
-    if (session_status() !== PHP_SESSION_ACTIVE) {
-        session_start();
-    }
+    start_secure_session();
     $expected = $_SESSION[CSRF_TOKEN_KEY] ?? '';
     if ($expected === '' || $token === '') {
         return false;
@@ -92,6 +110,34 @@ function redirect(string $url): void
 {
     header('Location: ' . $url);
     exit;
+}
+
+/**
+ * Cek rate limit sederhana via tabel rate_limits.
+ * Memakai getDB() saat runtime — pastikan includes/db.php sudah di-load.
+ *
+ * @param string $identifier IP atau user id
+ * @param string $action Aksi (upload, login, register, api_*)
+ * @param int $max Maksimal per window
+ * @param int $window_seconds Window detik
+ * @return bool True jika masih boleh
+ */
+function check_rate_limit(string $identifier, string $action, int $max, int $window_seconds = 3600): bool
+{
+    $pdo = getDB();
+    $stmt = $pdo->prepare('SELECT request_count, window_end FROM rate_limits WHERE identifier = ? AND action = ?');
+    $stmt->execute([$identifier, $action]);
+    $row = $stmt->fetch();
+    if (!$row || strtotime((string) $row['window_end']) < time()) {
+        $stmt = $pdo->prepare('INSERT INTO rate_limits (identifier, action, request_count, window_start, window_end) VALUES (?, ?, 1, NOW(), DATE_ADD(NOW(), INTERVAL ? SECOND)) ON DUPLICATE KEY UPDATE request_count = 1, window_start = NOW(), window_end = DATE_ADD(NOW(), INTERVAL ? SECOND)');
+        $stmt->execute([$identifier, $action, $window_seconds, $window_seconds]);
+        return true;
+    }
+    if ((int) $row['request_count'] >= $max) {
+        return false;
+    }
+    $pdo->prepare('UPDATE rate_limits SET request_count = request_count + 1 WHERE identifier = ? AND action = ?')->execute([$identifier, $action]);
+    return true;
 }
 
 /**

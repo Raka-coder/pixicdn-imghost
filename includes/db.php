@@ -9,12 +9,10 @@
  */
 declare(strict_types=1);
 
-if (!defined('DB_HOST')) {
-    require_once dirname(__DIR__) . '/config.example.php';
-    if (is_file(dirname(__DIR__) . '/config.php')) {
-        require_once dirname(__DIR__) . '/config.php';
-    }
+if (is_file(dirname(__DIR__) . '/config.php')) {
+    require_once dirname(__DIR__) . '/config.php';
 }
+require_once dirname(__DIR__) . '/config.example.php'; // dev-fill saja, guarded defined()
 
 /**
  * Ambil koneksi PDO singleton.
