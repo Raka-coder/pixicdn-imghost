@@ -1,7 +1,7 @@
 # systemd: RustFS (Server 3, 192.168.1.50) — binary native, BUKAN container
 # Install binary: wget https://dl.rustfs.com/artifacts/rustfs/release/rustfs-linux-x86_64-musl-latest.zip
 #   unzip, chmod +x, mv ke /usr/local/bin/rustfs
-# Kredensial via /opt/rustfs/env (lihat rustfs.env.example, chmod 600, TIDAK di-commit)
+# Kredensial via /etc/default/rustfs (lihat rustfs.env.example, chmod 600, TIDAK di-commit)
 # Salin ke /etc/systemd/system/rustfs.service, lalu:
 #   sudo systemctl daemon-reload && sudo systemctl enable --now rustfs.service
 [Unit]
@@ -14,7 +14,7 @@ Wants=network-online.target
 Type=simple
 User=root
 Group=root
-EnvironmentFile=/opt/rustfs/env
+EnvironmentFile=/etc/default/rustfs
 ExecStart=/usr/local/bin/rustfs server --address :9000 --console-address :9001 /data/rustfs0
 Restart=always
 RestartSec=5

@@ -44,6 +44,15 @@ function start_secure_session(): void
     if (session_status() === PHP_SESSION_ACTIVE) {
         return;
     }
+    // Custom save path agar tidak konflik dengan default PHP-FPM (/tmp)
+    // dan konsisten di semua endpoint. Folder di-ignore git.
+    $save_path = dirname(__DIR__) . '/tmp-sessions';
+    if (!is_dir($save_path)) {
+        mkdir($save_path, 0770, true);
+    }
+    if (is_dir($save_path) && is_writable($save_path)) {
+        session_save_path($save_path);
+    }
     session_name(defined('SESSION_NAME') ? SESSION_NAME : 'PIXICDN_SESSION');
     session_set_cookie_params([
         'lifetime' => 3600,

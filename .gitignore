@@ -5,6 +5,8 @@ docs/
 logs/*.log
 logs/*.txt
 *.log
+tmp-sessions/*
+!tmp-sessions/.gitkeep
 vendor/
 uploads/
 migrations/*.local.sql
