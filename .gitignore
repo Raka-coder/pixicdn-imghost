@@ -8,7 +8,8 @@ logs/*.txt
 tmp-sessions/*
 !tmp-sessions/.gitkeep
 vendor/
-uploads/
+uploads/*
+!uploads/.gitkeep
 migrations/*.local.sql
 *.db
 *.sqlite
