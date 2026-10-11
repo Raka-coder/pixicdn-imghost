@@ -1,19 +1,54 @@
 # PixiCDN
 
+![PHP](https://img.shields.io/badge/PHP-8.2-blue)
+![MariaDB](https://img.shields.io/badge/MariaDB-11-orange)
+![License](https://img.shields.io/badge/License-MIT-green)
+
 Self-hosted image hosting dengan direct link permanen. Upload gambar, dapatkan link yang bisa di-embed di forum/blog, kelola via dashboard, integrasi via REST API.
+
+> **Quick Start:** instalasi step-by-step ada di [SETUP.md](SETUP.md).
 
 ## Fitur
 
-- **Fase 1 (selesai):** Upload anonymous (max 5 file, 5 MB, JPG/PNG/GIF/WebP), direct link 3 format (Direct/BBCode/HTML) + copy, gallery (filter/sort/pagination 20), delete (ownership + konfirmasi), view counter (1 IP/jam).
-- **Fase 2 (selesai):** Register/login/logout (bcrypt cost 12, session regenerate), recovery code 8 char untuk reset password, profile (edit username + ubah password), API key (generate/regenerate/delete, tampil sekali), REST API (`/api/upload`, `/api/images`, `/api/delete`, `/api/me`), thumbnail 300px, dashboard + chart upload.
-- **Fase 3 (selesai):** Album CRUD (slug unik/user, tambah/keluarkan gambar, cover), analytics (top 10, views 30 hari, upload 7 hari), expiry (never/1h/1d/7d/30d) + `cron/cleanup.php` (expired, fisik >30 hari, token, log 90 hari).
+- **Upload & link:** max 5 file, 5 MB/file (JPG/PNG/GIF/WebP), direct link + BBCode + HTML + tombol copy, thumbnails 300px, expiry otomatis.
+- **Galeri & album:** filter/sort/pagination, album dengan share link publik, view counter anti-spam.
+- **Akun:** register + recovery code, login/logout, reset password, profile, dashboard + analytics.
+- **Developer:** REST API (`X-API-Key`), API key management, health endpoint `/health.php`.
+- Wajib akun untuk upload & kelola; viewer gambar dan album publik tetap terbuka.
 
-Non-goal: payment, AI tagging, editor gambar, video, social.
+## Screenshot
+
+> Placeholder — tambahkan `docs/screenshot-landing.png` dan `docs/screenshot-dashboard.png` di sini.
+>
+> `![Landing](docs/screenshot-landing.png)` · `![Dashboard](docs/screenshot-dashboard.png)`
 
 ## Tech Stack
 
-- PHP 8.2 native, MariaDB 11, RustFS (S3-compatible) via `aws/aws-sdk-php`, Caddy, Podman + Quadlet, Cloudflare (CDN + tunnel).
-- Frontend: Tailwind CSS v4 (CDN), Toastify-js, Chart.js, Lucide. Upload zone native drag-drop (siap ganti FileBokz).
+| Layer | Teknologi |
+|:---|:---|
+| Backend | PHP 8.2 native, `aws/aws-sdk-php` ^3.0 |
+| Database | MariaDB 11 (`pixicdn_db`, 9 tabel) |
+| Storage | RustFS S3-compatible (bucket `pixicdn`) |
+| Web | Caddy 2 + PHP-FPM, Podman Quadlet |
+| CDN | Cloudflare (tunnel + edge cache) |
+| Frontend | Tailwind CSS v4 (CDN), Toastify-js, Chart.js, Lucide, Inter |
+
+## Dokumentasi
+
+- [SETUP.md](SETUP.md) — cara instalasi manual.
+- [SECURITY.md](SECURITY.md) — security policy.
+- [CHANGELOG.md](CHANGELOG.md) — changelog.
+
+## Contributing
+
+1. Fork + branch `feature/nama-fitur` dari `main`.
+2. Ikuti aturan: `strict_types`, PDO prepared, escape output, CSRF di form.
+3. Tambahkan/ perbarui test di `tests/` dan pastikan semua hijau.
+4. Commit jelas (`feat: ...`, `fix: ...`, `docs: ...`), buka pull request.
+
+## License
+
+MIT — bebas dipakai, diubah, dan didistribusikan dengan mencantumkan atribusi.
 
 ## Syarat
 
