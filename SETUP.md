@@ -73,8 +73,12 @@ find . -type d -exec chmod 755 {} \;
 find . -type f -exec chmod 644 {} \;
 chmod 640 config.php
 chown -R 1000:1000 .
-# Grup PHP-FPM pada image bookworm adalah www-data (gid 33),
-# BUKAN 82 (itu untuk Alpine). Sesuaikan bila base image diganti.
+# Grup PHP-FPM adalah www-data. GID-nya tergantung base image:
+#   - php:8.2-fpm (Debian bookworm) → GID 33
+#   - php:8.2-fpm-alpine → GID 82
+# Cek yang dipakai:
+#   podman exec phpfpm id www-data
+# Contoh untuk Alpine: chgrp 82 config.php (ganti 33 → 82 di bawah).
 chgrp 33 config.php
 chmod 775 logs tmp-sessions
 chmod 770 tmp-sessions
