@@ -18,7 +18,7 @@ body {
 }
 
 /* ---- Tombol: 48px, radius 8px, Inter diganti Work Sans 600 ---- */
-.btn:not(.hidden) {
+.btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -85,6 +85,21 @@ select:focus-visible {
         min-width: 0;
         padding-left: 16px;
         padding-right: 16px;
+    }
+}
+
+/* ---- Interaksi dengan utilitas responsive Tailwind ----
+ * Spesifisitas .btn mengalahkan .hidden Tailwind pada breakpoint
+ * mana pun, jadi pola "hidden sm:inline-flex" butuh aturan eksplisit
+ * agar SEMBUNYI di mobile dan MUNCUL di sm+ tanpa peduli urutan stylesheet.
+ */
+.btn.hidden {
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .btn.hidden.sm\:inline-flex {
+        display: inline-flex;
     }
 }
 
