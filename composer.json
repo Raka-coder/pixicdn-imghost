@@ -2,6 +2,7 @@
     "name": "pixicdn/pixicdn",
     "description": "PixiCDN - self-hosted image hosting with direct link",
     "type": "project",
+    "license": "MIT",
     "require": {
         "php": ">=8.2",
         "aws/aws-sdk-php": "^3.0"

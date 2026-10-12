@@ -18,11 +18,7 @@ Self-hosted image hosting dengan direct link permanen. Upload gambar, dapatkan l
 
 ## Screenshot
 
-> Placeholder — tambahkan `screenshots/landing.png`, `screenshots/dashboard.png`,
-> `screenshots/upload.png`, dan `screenshots/gallery.png` di sini.
->
-> `![Landing](screenshots/landing.png)` · `![Dashboard](screenshots/dashboard.png)` ·
-> `![Upload](screenshots/upload.png)` · `![Gallery](screenshots/gallery.png)`
+> Menyusul — screenshot landing, dashboard, upload, dan gallery akan ditambahkan di sini.
 
 ## Tech Stack
 
