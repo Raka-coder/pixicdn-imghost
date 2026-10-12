@@ -78,7 +78,7 @@ try {
 <div id="sb-backdrop" class="fixed inset-0 bg-black/40 hidden md:hidden z-30"></div>
 <aside id="sb" class="fixed top-0 left-0 h-full w-60 bg-white border-r border-[#CBD2D6] z-40 -translate-x-full md:translate-x-0 transition-transform flex flex-col" aria-label="Menu dashboard">
 <div class="h-16 flex items-center px-6 border-b border-[#CBD2D6]">
-<a href="/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
+<a href="/dashboard/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
 </div>
 <nav class="p-4 space-y-1">
 <p class="px-3 pt-2 pb-1 text-xs font-semibold text-[#687173] uppercase tracking-wide">Menu</p>
@@ -95,10 +95,31 @@ try {
 <div class="md:ml-60 min-h-screen flex flex-col">
 <header class="md:hidden bg-white border-b border-[#CBD2D6] h-16 flex items-center gap-3 px-4 sticky top-0 z-20">
 <button id="sb-open" class="p-2 rounded-lg hover:bg-[#F5F7FA]" aria-label="Buka menu"><i data-lucide="menu"></i></button>
-<a href="/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
+<a href="/dashboard/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
 </header>
 <main class="max-w-[1120px] w-full mx-auto px-6 py-10">
+<nav class="flex items-center gap-1 text-sm text-[#687173] mb-4" aria-label="Breadcrumb">
+<span class="font-medium text-[#1A1A2E]" aria-current="page">Dashboard</span>
+</nav>
 <h1 class="font-bold mb-6" style="font-size:32px">Halo, <?= sanitize($user['username']) ?></h1>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6" aria-label="Aksi cepat">
+<a href="/upload.php" class="card flex items-center gap-3">
+<span class="p-2 rounded-lg bg-[#EAF0FA] text-[#003087]"><i data-lucide="upload" class="w-5 h-5"></i></span>
+<span><span class="block font-semibold">Upload</span><span class="block text-xs text-[#687173]">Gambar baru</span></span>
+</a>
+<a href="/gallery.php" class="card flex items-center gap-3">
+<span class="p-2 rounded-lg bg-[#EAF0FA] text-[#003087]"><i data-lucide="image" class="w-5 h-5"></i></span>
+<span><span class="block font-semibold">Gallery</span><span class="block text-xs text-[#687173]">Koleksi saya</span></span>
+</a>
+<a href="/dashboard/albums.php" class="card flex items-center gap-3">
+<span class="p-2 rounded-lg bg-[#EAF0FA] text-[#003087]"><i data-lucide="folder-plus" class="w-5 h-5"></i></span>
+<span><span class="block font-semibold">Album</span><span class="block text-xs text-[#687173]">Buat &amp; atur</span></span>
+</a>
+<a href="/dashboard/api-key.php" class="card flex items-center gap-3">
+<span class="p-2 rounded-lg bg-[#EAF0FA] text-[#003087]"><i data-lucide="key" class="w-5 h-5"></i></span>
+<span><span class="block font-semibold">API key</span><span class="block text-xs text-[#687173]">Integrasi</span></span>
+</a>
+</div>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 <div class="card"><p class="text-[#687173] text-sm">Total gambar</p><p class="tnum font-bold" style="font-size:32px"><?= (int) $stats['total'] ?></p></div>
 <div class="card"><p class="text-[#687173] text-sm">Total views</p><p class="tnum font-bold" style="font-size:32px"><?= (int) $stats['views'] ?></p></div>
@@ -126,6 +147,11 @@ try {
 </div>
 </main>
 </div>
+<footer class="md:ml-60 border-t border-[#CBD2D6] bg-white">
+<div class="max-w-[1120px] mx-auto px-6 py-4 text-sm text-[#687173]">
+<a href="/" class="hover:text-[#003087] font-medium">Halaman Utama</a>
+</div>
+</footer>
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
 lucide.createIcons();

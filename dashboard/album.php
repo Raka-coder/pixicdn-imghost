@@ -89,7 +89,7 @@ $share_url = rtrim(APP_URL, '/') . '/album.php?u=' . rawurlencode($user['usernam
 <div id="sb-backdrop" class="fixed inset-0 bg-black/40 hidden md:hidden z-30"></div>
 <aside id="sb" class="fixed top-0 left-0 h-full w-60 bg-white border-r border-[#CBD2D6] z-40 -translate-x-full md:translate-x-0 transition-transform flex flex-col" aria-label="Menu dashboard">
 <div class="h-16 flex items-center px-6 border-b border-[#CBD2D6]">
-<a href="/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
+<a href="/dashboard/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
 </div>
 <nav class="p-4 space-y-1">
 <p class="px-3 pt-2 pb-1 text-xs font-semibold text-[#687173] uppercase tracking-wide">Menu</p>
@@ -106,17 +106,27 @@ $share_url = rtrim(APP_URL, '/') . '/album.php?u=' . rawurlencode($user['usernam
 <div class="md:ml-60 min-h-screen flex flex-col">
 <header class="md:hidden bg-white border-b border-[#CBD2D6] h-16 flex items-center gap-3 px-4 sticky top-0 z-20">
 <button id="sb-open" class="p-2 rounded-lg hover:bg-[#F5F7FA]" aria-label="Buka menu"><i data-lucide="menu"></i></button>
-<a href="/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
+<a href="/dashboard/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
 </header>
 <main class="max-w-5xl w-full mx-auto px-6 py-10">
+<nav class="flex items-center gap-1 text-sm text-[#687173] mb-4" aria-label="Breadcrumb">
+<a href="/dashboard/" class="hover:text-[#003087]">Dashboard</a>
+<i data-lucide="chevron-right" class="w-4 h-4"></i>
+<a href="/dashboard/albums.php" class="hover:text-[#003087]">Album</a>
+<i data-lucide="chevron-right" class="w-4 h-4"></i>
+<span class="font-medium text-[#1A1A2E]" aria-current="page"><?= sanitize($album['name']) ?></span>
+</nav>
+<div class="flex items-center gap-3 mb-4">
+<a href="/dashboard/albums.php" class="btn btn-secondary btn-sm">← Kembali</a>
 <h1 class="font-bold" style="font-size:32px"><?= sanitize($album['name']) ?></h1>
+</div>
 <p class="text-[#687173] text-sm mb-4"><?= (int) $album['image_count'] ?> gambar · <?= $album['is_public'] ? 'publik' : 'privat' ?></p>
 <div class="card mb-6 flex flex-wrap items-center gap-3">
 <div class="flex-1 min-w-52">
 <p class="text-sm font-medium mb-1">Link publik album</p>
 <p class="mono text-xs break-all text-[#687173]"><?= sanitize($share_url) ?></p>
 </div>
-<button id="share-copy" class="btn btn-secondary" data-url="<?= sanitize($share_url) ?>">Salin link</button>
+<button id="share-copy" class="btn btn-secondary btn-sm" data-url="<?= sanitize($share_url) ?>">Salin link</button>
 </div>
 <?php if ($msg !== ''): ?><p class="bg-[#E6F4EA] text-[#019C34] border border-[#019C34] rounded-lg p-3 mb-4 text-sm"><?= sanitize($msg) ?></p><?php endif; ?>
 <?php if ($err !== ''): ?><p class="bg-[#FDE7E7] text-[#D20000] border border-[#D20000] rounded-lg p-3 mb-4 text-sm" role="alert"><?= sanitize($err) ?></p><?php endif; ?>
@@ -145,6 +155,11 @@ $share_url = rtrim(APP_URL, '/') . '/album.php?u=' . rawurlencode($user['usernam
 <p class="mt-4 text-sm"><a href="/dashboard/albums.php" class="text-[#003087] underline">Semua album</a></p>
 </main>
 </div>
+<footer class="md:ml-60 border-t border-[#CBD2D6] bg-white">
+<div class="max-w-5xl mx-auto px-6 py-4 text-sm text-[#687173]">
+<a href="/" class="hover:text-[#003087] font-medium">Halaman Utama</a>
+</div>
+</footer>
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
 lucide.createIcons();

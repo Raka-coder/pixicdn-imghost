@@ -79,6 +79,40 @@ select:focus-visible {
     background: #A80000;
 }
 
+/* ---- Ukuran tombol responsif (dashboard dkk.) ----
+ * .btn-sm 36px / 14px — aksi kecil kontekstual
+ * .btn-md 40px / semibold — default form sejajar input
+ * .btn-lg 48px / bold — CTA utama (sama dengan .btn)
+ * Di layar ≤640px, md & lg mengecil otomatis.
+ */
+.btn-sm {
+    min-height: 36px;
+    padding-left: 16px;
+    padding-right: 16px;
+    font-size: 14px;
+    min-width: 0;
+}
+
+.btn-md {
+    min-height: 40px;
+}
+
+.btn-lg {
+    min-height: 48px;
+    font-weight: 700;
+}
+
+@media (max-width: 640px) {
+    .btn-md {
+        min-height: 36px;
+        font-size: 14px;
+    }
+    .btn-lg {
+        min-height: 40px;
+        font-size: 15px;
+    }
+}
+
 /* ---- Layar sangat kecil: tombol boleh menyusut ---- */
 @media (max-width: 400px) {
     .btn {
