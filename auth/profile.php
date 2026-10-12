@@ -2,7 +2,7 @@
 /**
  * ============================================================
  * File: auth/profile.php
- * Deskripsi: Info user + edit username + ubah password (Tahap 4)
+ * Deskripsi: Info user + edit username + ubah password — Bootstrap 5.3
  * Author: Raka Restu Saputra
  * Created: 2026-10-10
  * ============================================================
@@ -13,7 +13,7 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 if (is_file(dirname(__DIR__) . '/config.php')) {
     require_once dirname(__DIR__) . '/config.php';
 }
-require_once dirname(__DIR__) . '/config.example.php'; // dev-fill saja, guarded defined()
+require_once dirname(__DIR__) . '/config.example.php';
 require_once dirname(__DIR__) . '/includes/helpers.php';
 require_once dirname(__DIR__) . '/includes/db.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
@@ -71,53 +71,141 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profil — PixiCDN</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<link rel="stylesheet" href="/assets/app.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen">
-<?php require dirname(__DIR__) . '/includes/sidebar.php'; ?>
-<main class="max-w-2xl w-full mx-auto px-6 py-10">
-<?php require dirname(__DIR__) . '/includes/breadcrumbs.php'; ?>
-<h1 class="page-title mb-4">Profil</h1>
-<div class="bg-white border border-[#CBD2D6] rounded-xl p-6 mb-4 text-sm">
-<p>Username: <b><?= sanitize($user['username']) ?></b></p>
-<p class="text-[#687173]">Bergabung: <?= sanitize((string) $user['created_at']) ?></p>
-<p class="text-[#687173]">Storage: <span class="tnum"><?= round(((int) $user['storage_used']) / 1048576, 2) ?> / <?= round(((int) $user['storage_quota']) / 1048576) ?> MB</span></p>
+<?php
+$page_title = 'Profil — PixiCDN';
+require dirname(__DIR__) . '/includes/header.php';
+?>
+
+<div class="container-fluid">
+    <div class="row g-0">
+        <!-- Sidebar Desktop -->
+        <aside class="col-md-3 col-lg-2 d-none d-md-block bg-white border-end border-2 border-primary min-vh-100 position-sticky top-0 sidebar-desktop">
+            <?php require dirname(__DIR__) . '/includes/sidebar.php'; ?>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
+            <!-- Breadcrumb + Back Button -->
+            <nav aria-label="Breadcrumb" class="mb-4">
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <?php if ($back_url !== null): ?>
+                        <a href="<?= sanitize($back_url) ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
+                    <?php endif; ?>
+                    <ol class="breadcrumb mb-0 flex-wrap">
+                        <?php foreach ($crumbs as $i => $c): ?>
+                            <?php if ($i > 0): ?>
+                                <li class="breadcrumb-item"><i class="bi bi-chevron-right text-secondary"></i></li>
+                            <?php endif; ?>
+                            <?php if (isset($c['url'])): ?>
+                                <li class="breadcrumb-item"><a href="<?= sanitize($c['url']) ?>" class="text-decoration-none text-secondary"><?= sanitize($c['label']) ?></a></li>
+                            <?php else: ?>
+                                <li class="breadcrumb-item active fw-semibold text-body-emphasis" aria-current="page"><?= sanitize($c['label']) ?></li>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </ol>
+                </div>
+            </nav>
+
+            <h1 class="page-title mb-4">Profil</h1>
+
+            <!-- Profile Info Card -->
+            <div class="card card-trust mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center icon-box-lg">
+                                <span class="fw-bold fs-2"><?= strtoupper(substr(sanitize($user['username']), 0, 1)) ?></span>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h3 class="fw-semibold mb-1"><?= sanitize($user['username']) ?></h3>
+                            <p class="text-secondary small mb-0">Bergabung: <?= sanitize((string) $user['created_at']) ?></p>
+                        </div>
+                        <div class="col-auto">
+                            <div class="text-end">
+                                <p class="text-secondary small mb-1">Storage</p>
+                                <p class="tnum fw-bold text-primary"><?= round(((int) $user['storage_used']) / 1048576, 2) ?> / <?= round(((int) $user['storage_quota']) / 1048576) ?> MB</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <?php if ($msg !== ''): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?= sanitize($msg) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+                </div>
+            <?php endif; ?>
+            <?php if ($err !== ''): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?= sanitize($err) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+                </div>
+            <?php endif; ?>
+
+            <!-- Username Form -->
+            <form method="post" class="card card-trust mb-4" data-bs-toggle="validator">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="fw-semibold mb-0">Ubah Username</h5>
+                </div>
+                <div class="card-body">
+                    <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
+                    <input type="hidden" name="action" value="username">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="username" id="username" class="form-control" placeholder="Username" required pattern="[a-zA-Z0-9_]+" minlength="3" maxlength="30" value="<?= sanitize($user['username']) ?>" autocomplete="username">
+                        <label for="username"><i class="bi bi-person me-2"></i>Username baru</label>
+                        <div class="invalid-feedback">Username 3-30 karakter, huruf/angka/underscore.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Simpan username</button>
+                </div>
+            </form>
+
+            <!-- Password Form -->
+            <form method="post" class="card card-trust" data-bs-toggle="validator">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="fw-semibold mb-0">Ubah Password</h5>
+                </div>
+                <div class="card-body">
+                    <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
+                    <input type="hidden" name="action" value="password">
+                    <div class="form-floating mb-3 position-relative">
+                        <input type="password" name="old" id="oldPassword" class="form-control pe-5" placeholder="Password lama" required autocomplete="current-password">
+                        <label for="oldPassword"><i class="bi bi-lock me-2"></i>Password lama</label>
+                        <button type="button" class="btn btn-link text-secondary p-0 position-absolute end-0 top-50 translate-middle-y me-3" data-bs-toggle="password" data-bs-target="oldPassword" aria-label="Tampilkan/sembunyikan password">
+                            <i class="bi bi-eye-slash fs-5"></i>
+                        </button>
+                        <div class="invalid-feedback">Password lama salah.</div>
+                    </div>
+                    <div class="form-floating mb-3 position-relative">
+                        <input type="password" name="new" id="newPassword" class="form-control pe-5" placeholder="Password baru" required minlength="8" autocomplete="new-password">
+                        <label for="newPassword"><i class="bi bi-lock-fill me-2"></i>Password baru (min 8)</label>
+                        <button type="button" class="btn btn-link text-secondary p-0 position-absolute end-0 top-50 translate-middle-y me-3" data-bs-toggle="password" data-bs-target="newPassword" aria-label="Tampilkan/sembunyikan password">
+                            <i class="bi bi-eye-slash fs-5"></i>
+                        </button>
+                        <div class="invalid-feedback">Password baru minimal 8 karakter.</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-secondary" id="passwordStrengthLabel">Kekuatan: —</span>
+                        </div>
+                        <div class="progress progress-strength">
+                            <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" id="passwordStrength" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="form-floating mb-3 position-relative">
+                        <input type="password" name="confirm" id="confirmPassword" class="form-control pe-5" placeholder="Konfirmasi" required autocomplete="new-password">
+                        <label for="confirmPassword"><i class="bi bi-lock-fill me-2"></i>Konfirmasi</label>
+                        <button type="button" class="btn btn-link text-secondary p-0 position-absolute end-0 top-50 translate-middle-y me-3" data-bs-toggle="password" data-bs-target="confirmPassword" aria-label="Tampilkan/sembunyikan password">
+                            <i class="bi bi-eye-slash fs-5"></i>
+                        </button>
+                        <div class="invalid-feedback">Konfirmasi password tidak sama.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-key me-1"></i>Ubah password</button>
+                </div>
+            </form>
+        </main>
+    </div>
 </div>
-<?php if ($msg !== ''): ?><p class="bg-[#E6F4EA] text-[#019C34] border border-[#019C34] rounded-lg p-3 mb-4 text-sm"><?= sanitize($msg) ?></p><?php endif; ?>
-<?php if ($err !== ''): ?><p class="bg-[#FDE7E7] text-[#D20000] border border-[#D20000] rounded-lg p-3 mb-4 text-sm" role="alert"><?= sanitize($err) ?></p><?php endif; ?>
-<form method="post" class="bg-white border border-[#CBD2D6] rounded-xl p-6 mb-4 space-y-3">
-<input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
-<input type="hidden" name="action" value="username">
-<label class="block text-sm font-medium">Username baru<input name="username" required pattern="[a-zA-Z0-9_]+" minlength="3" maxlength="30" value="<?= sanitize($user['username']) ?>" class="input mt-1"></label>
-<button class="btn btn-primary">Simpan username</button>
-</form>
-<form method="post" class="bg-white border border-[#CBD2D6] rounded-xl p-6 space-y-3">
-<input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
-<input type="hidden" name="action" value="password">
-<label class="block text-sm font-medium">Password lama<input type="password" name="old" required class="input mt-1"></label>
-<label class="block text-sm font-medium">Password baru (min 8)<input type="password" name="new" required minlength="8" class="input mt-1"></label>
-<label class="block text-sm font-medium">Konfirmasi<input type="password" name="confirm" required class="input mt-1"></label>
-<button class="btn btn-primary">Ubah password</button>
-</form>
-</main>
-</div>
-<footer class="md:ml-60 border-t border-[#CBD2D6] bg-white">
-<div class="max-w-2xl mx-auto px-6 py-4 text-sm text-[#687173]">
-<a href="/" class="hover:text-[#003087] font-medium">Halaman Utama</a>
-</div>
-</footer>
-<script src="https://unpkg.com/lucide@latest"></script>
-<script>
-lucide.createIcons();
-</script>
-</body>
-</html>
+
+<?php require dirname(__DIR__) . '/includes/footer.php'; ?>

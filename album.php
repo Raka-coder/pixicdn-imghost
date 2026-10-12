@@ -2,7 +2,7 @@
 /**
  * ============================================================
  * File: album.php
- * Deskripsi: Viewer album publik via slug (tanpa login jika publik)
+ * Deskripsi: Viewer album publik via slug (tanpa login jika publik) — Bootstrap 5.3
  * Author: Raka Restu Saputra
  * Created: 2026-10-10
  * URL: /album.php?u=<username>&s=<slug>
@@ -14,7 +14,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 if (is_file(__DIR__ . '/config.php')) {
     require_once __DIR__ . '/config.php';
 }
-require_once __DIR__ . '/config.example.php'; // dev-fill saja, guarded defined()
+require_once __DIR__ . '/config.example.php';
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/album.php';
@@ -48,10 +48,8 @@ if (!$row) {
     exit('Album tidak ditemukan');
 }
 
-// Reuse tested ownership path: allow_public=true, lalu hormati is_public eksplisit
 $is_owner = $me !== null && (int) $row['user_id'] === (int) $me['id'];
 if (!$is_owner && !(bool) $row['is_public']) {
-    // Samakan 404 agar album privat tidak enumerable
     http_response_code(404);
     exit('Album tidak ditemukan');
 }
@@ -66,35 +64,64 @@ try {
     $items = [];
 }
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= sanitize($album['name']) ?> — PixiCDN</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<link rel="stylesheet" href="/assets/app.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-</head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen" style="font-family:'Work Sans',system-ui,sans-serif">
-<header class="bg-white border-b border-[#CBD2D6] h-16">
-<nav class="max-w-[1120px] mx-auto px-6 h-16 flex items-center justify-between">
-<a href="/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
-<a href="/gallery.php" class="hover:text-[#003087] font-medium">Gallery</a>
-</nav>
-</header>
-<main class="max-w-[1120px] mx-auto px-6 py-10">
-<h1 class="font-bold" style="font-size:32px"><?= sanitize($album['name']) ?></h1>
-<p class="text-[#687173] text-sm mb-6"><span class="tnum"><?= (int) $album['image_count'] ?> gambar</span> · oleh <?= sanitize($username) ?></p>
-<?php if (!$items): ?><p class="text-[#687173]">Album ini kosong.</p><?php else: ?>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-<?php foreach ($items as $img): ?>
-<a href="/image.php?f=<?= sanitize($img['filename']) ?>" class="bg-white border border-[#CBD2D6] rounded-xl overflow-hidden block"><img src="<?= sanitize($img['thumbnail_url'] ?: $img['public_url']) ?>" alt="<?= sanitize($img['filename']) ?>" loading="lazy" class="w-full h-40 object-cover"></a>
-<?php endforeach; ?>
-</div>
-<?php endif; ?>
-<p class="mt-6"><a href="/gallery.php" class="text-[#003087] font-medium underline">Gallery</a></p>
+<?php
+$page_title = sanitize($album['name']) . ' — PixiCDN';
+$is_public_page = true;
+require dirname(__DIR__) . '/includes/header.php';
+?>
+
+<main class="flex-grow-1">
+    <div class="container py-5">
+        <!-- Breadcrumb for public album -->
+        <nav aria-label="Breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/gallery.php" class="text-decoration-none text-secondary">Gallery</a></li>
+                <li class="breadcrumb-item"><i class="bi bi-chevron-right text-secondary"></i></li>
+                <li class="breadcrumb-item active fw-semibold text-body-emphasis" aria-current="page"><?= sanitize($album['name']) ?></li>
+            </ol>
+        </nav>
+
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+            <div>
+                <h1 class="page-title mb-1"><?= sanitize($album['name']) ?></h1>
+                <p class="text-secondary small mb-0"><span class="tnum"><?= (int) $album['image_count'] ?> gambar</span> · oleh <?= sanitize($username) ?></p>
+                <?php if ($album['description']): ?>
+                    <p class="text-secondary small mt-2"><?= sanitize($album['description']) ?></p>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <?php if (!$items): ?>
+            <!-- Empty State -->
+            <div class="card card-trust text-center py-5">
+                <div class="d-inline-flex align-items-center justify-content-center bg-secondary-subtle text-secondary rounded-circle mb-3 icon-box-lg">
+                    <i class="bi bi-folder fs-1"></i>
+                </div>
+                <h3 class="fw-semibold mb-2">Album ini kosong</h3>
+                <p class="text-secondary mb-0">Belum ada gambar di album ini.</p>
+            </div>
+        <?php else: ?>
+            <!-- Album Grid -->
+            <div class="row g-4">
+                <?php foreach ($items as $img): ?>
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <a href="/image.php?f=<?= sanitize($img['filename']) ?>" class="card card-trust h-100 overflow-hidden text-decoration-none">
+                            <div class="ratio ratio-4x3 overflow-hidden">
+                                <img src="<?= sanitize($img['thumbnail_url'] ?: $img['public_url']) ?>" 
+                                     alt="<?= sanitize($img['filename']) ?>" 
+                                     loading="lazy" 
+                                     class="w-100 h-100 object-fit-cover zoom-hover">
+                            </div>
+                        </a>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
+        <div class="mt-4 text-center">
+            <a href="/gallery.php" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-1"></i>Kembali ke Gallery</a>
+        </div>
+    </div>
 </main>
-</body>
-</html>
+
+<?php require dirname(__DIR__) . '/includes/footer.php'; ?>

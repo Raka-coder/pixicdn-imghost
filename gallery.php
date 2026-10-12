@@ -2,7 +2,7 @@
 /**
  * ============================================================
  * File: gallery.php
- * Deskripsi: Gallery pribadi user login (filter, sort, pagination 20)
+ * Deskripsi: Gallery pribadi user login (filter, sort, pagination 20) — Bootstrap 5.3
  * Author: Raka Restu Saputra
  * Created: 2026-10-10
  * ============================================================
@@ -13,12 +13,12 @@ require_once __DIR__ . '/vendor/autoload.php';
 if (is_file(__DIR__ . '/config.php')) {
     require_once __DIR__ . '/config.php';
 }
-require_once __DIR__ . '/config.example.php'; // dev-fill saja, guarded defined()
+require_once __DIR__ . '/config.example.php';
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/auth.php';
 
 start_secure_session();
-require_login(); // Wajib akun — koleksi pribadi user
+require_login();
 $user = current_user();
 $uid = (int) $user['id'];
 $filter = $_GET['filter'] ?? 'all';
@@ -57,73 +57,124 @@ $active = 'gallery';
 $crumbs = [['label' => 'Dashboard', 'url' => '/dashboard/'], ['label' => 'Gallery']];
 $back_url = '/dashboard/';
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gallery — PixiCDN</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<link rel="stylesheet" href="/assets/app.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-</head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen">
-<?php require __DIR__ . '/includes/sidebar.php'; ?>
-<main class="max-w-[1120px] w-full mx-auto px-6 py-10">
-<?php require __DIR__ . '/includes/breadcrumbs.php'; ?>
-<h1 class="page-title mb-6">Gallery</h1>
-<form method="get" class="flex flex-wrap gap-2 mb-6">
-<select name="filter" class="input input-auto" aria-label="Filter waktu">
-<?php foreach (['all' => 'Semua', 'today' => 'Hari ini', 'week' => 'Minggu ini', 'month' => 'Bulan ini'] as $k => $l): ?>
-<option value="<?= $k ?>" <?= $filter === $k ? 'selected' : '' ?>><?= $l ?></option>
-<?php endforeach; ?>
-</select>
-<select name="sort" class="input input-auto" aria-label="Urutkan">
-<?php foreach (['newest' => 'Terbaru', 'oldest' => 'Terlama', 'views' => 'Terpopuler'] as $k => $l): ?>
-<option value="<?= $k ?>" <?= $sort === $k ? 'selected' : '' ?>><?= $l ?></option>
-<?php endforeach; ?>
-</select>
-<button class="btn btn-secondary">Terapkan</button>
-</form>
-<?php if (!$images): ?>
-<div class="bg-white border border-[#CBD2D6] rounded-xl p-6 text-center py-16">
-<h3 class="text-xl font-semibold mb-2">Belum ada gambar</h3>
-<p class="text-[#687173] mb-6">Upload gambar pertama Anda untuk memulai</p>
-<a href="/upload.php" class="btn btn-primary">Upload Sekarang</a>
+<?php
+$page_title = 'Gallery — PixiCDN';
+require dirname(__DIR__) . '/includes/header.php';
+?>
+
+<div class="container-fluid">
+    <div class="row g-0">
+        <!-- Sidebar Desktop -->
+        <aside class="col-md-3 col-lg-2 d-none d-md-block bg-white border-end border-2 border-primary min-vh-100 position-sticky top-0 sidebar-desktop">
+            <?php require dirname(__DIR__) . '/includes/sidebar.php'; ?>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
+            <!-- Breadcrumb + Back Button -->
+            <nav aria-label="Breadcrumb" class="mb-4">
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <?php if ($back_url !== null): ?>
+                        <a href="<?= sanitize($back_url) ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
+                    <?php endif; ?>
+                    <ol class="breadcrumb mb-0 flex-wrap">
+                        <?php foreach ($crumbs as $i => $c): ?>
+                            <?php if ($i > 0): ?>
+                                <li class="breadcrumb-item"><i class="bi bi-chevron-right text-secondary"></i></li>
+                            <?php endif; ?>
+                            <?php if (isset($c['url'])): ?>
+                                <li class="breadcrumb-item"><a href="<?= sanitize($c['url']) ?>" class="text-decoration-none text-secondary"><?= sanitize($c['label']) ?></a></li>
+                            <?php else: ?>
+                                <li class="breadcrumb-item active fw-semibold text-body-emphasis" aria-current="page"><?= sanitize($c['label']) ?></li>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </ol>
+                </div>
+            </nav>
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                <h1 class="page-title mb-0">Gallery</h1>
+                <a href="/upload.php" class="btn btn-primary"><i class="bi bi-cloud-upload me-1"></i>Upload</a>
+            </div>
+
+            <!-- Filter & Sort Form -->
+            <form method="get" class="row g-2 align-items-end mb-4">
+                <div class="col-auto">
+                    <label for="filter" class="visually-hidden">Filter waktu</label>
+                    <select name="filter" id="filter" class="form-select" aria-label="Filter waktu">
+                        <?php foreach (['all' => 'Semua', 'today' => 'Hari ini', 'week' => 'Minggu ini', 'month' => 'Bulan ini'] as $k => $l): ?>
+                            <option value="<?= $k ?>" <?= $filter === $k ? 'selected' : '' ?>><?= $l ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label for="sort" class="visually-hidden">Urutkan</label>
+                    <select name="sort" id="sort" class="form-select" aria-label="Urutkan">
+                        <?php foreach (['newest' => 'Terbaru', 'oldest' => 'Terlama', 'views' => 'Terpopuler'] as $k => $l): ?>
+                            <option value="<?= $k ?>" <?= $sort === $k ? 'selected' : '' ?>><?= $l ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-secondary">Terapkan</button>
+                </div>
+            </form>
+
+            <?php if (!$images): ?>
+                <!-- Empty State -->
+                <div class="card card-trust text-center py-5">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-secondary-subtle text-secondary rounded-circle mb-3 icon-box-lg">
+                        <i class="bi bi-images fs-1"></i>
+                    </div>
+                    <h3 class="fw-semibold mb-2">Belum ada gambar</h3>
+                    <p class="text-secondary mb-4">Upload gambar pertama Anda untuk memulai</p>
+                    <a href="/upload.php" class="btn btn-primary"><i class="bi bi-cloud-upload me-1"></i>Upload Sekarang</a>
+                </div>
+            <?php else: ?>
+                <!-- Gallery Grid -->
+                <div class="row g-4 mb-4">
+                    <?php foreach ($images as $img): ?>
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="card card-trust h-100 overflow-hidden">
+                                <div class="ratio ratio-4x3 overflow-hidden position-relative">
+                                    <a href="/image.php?f=<?= sanitize($img['filename']) ?>">
+                                        <img src="<?= sanitize($img['thumbnail_url'] ?: $img['public_url']) ?>" 
+                                             alt="<?= sanitize($img['filename']) ?>" 
+                                             loading="lazy" 
+                                             class="w-100 h-100 object-fit-cover zoom-hover">
+                                    </a>
+                                    <div class="position-absolute top-0 end-0 m-2">
+                                        <span class="badge bg-dark bg-opacity-75 text-light px-2 py-1"><i class="bi bi-eye me-1"></i><?= (int) $img['views'] ?></span>
+                                    </div>
+                                </div>
+                                <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                                    <p class="text-truncate small text-secondary mb-0"><?= sanitize($img['filename']) ?></p>
+                                    <form method="post" action="/delete.php" onsubmit="return confirm('Hapus gambar ini?')" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
+                                        <input type="hidden" name="id" value="<?= (int) $img['id'] ?>">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" data-bs-title="Hapus gambar" aria-label="Hapus gambar">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Pagination" class="d-flex justify-center">
+                    <ul class="pagination pagination-sm">
+                        <?php for ($p = 1; $p <= $pages; $p++): ?>
+                            <li class="page-item <?= $p === $page ? 'active' : '' ?>" <?= $p === $page ? 'aria-current="page"' : '' ?>>
+                                <a class="page-link" href="?filter=<?= sanitize($filter) ?>&sort=<?= sanitize($sort) ?>&page=<?= $p ?>"><?= $p ?></a>
+                            </li>
+                        <?php endfor; ?>
+                    </ul>
+                </nav>
+            <?php endif; ?>
+        </main>
+    </div>
 </div>
-<?php else: ?>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-<?php foreach ($images as $img): ?>
-<div class="bg-white border border-[#CBD2D6] rounded-xl overflow-hidden">
-<a href="/image.php?f=<?= sanitize($img['filename']) ?>"><img src="<?= sanitize($img['thumbnail_url'] ?: $img['public_url']) ?>" alt="<?= sanitize($img['filename']) ?>" loading="lazy" class="w-full h-40 object-cover"></a>
-<div class="p-4 flex items-center justify-between text-sm text-[#687173]">
-<span class="tnum"><?= (int) $img['views'] ?> views</span>
-<form method="post" action="/delete.php" onsubmit="return confirm('Hapus gambar ini?')">
-<input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
-<input type="hidden" name="id" value="<?= (int) $img['id'] ?>">
-<button class="text-[#D20000] font-medium">Hapus</button>
-</form>
-</div>
-</div>
-<?php endforeach; ?>
-</div>
-<div class="flex flex-wrap gap-2 mt-6">
-<?php for ($p = 1; $p <= $pages; $p++): ?>
-<a href="?filter=<?= sanitize($filter) ?>&sort=<?= sanitize($sort) ?>&page=<?= $p ?>" class="btn-page<?= $p === $page ? ' active' : '' ?>"<?= $p === $page ? ' aria-current="page"' : '' ?>><?= $p ?></a>
-<?php endfor; ?>
-</div>
-<?php endif; ?>
-</main>
-</div>
-<footer class="md:ml-60 border-t border-[#CBD2D6] bg-white">
-<div class="max-w-[1120px] mx-auto px-6 py-4 text-sm text-[#687173]">
-<a href="/" class="hover:text-[#003087] font-medium">Halaman Utama</a>
-</div>
-</footer>
-<script src="https://unpkg.com/lucide@latest"></script>
-<script>
-lucide.createIcons();
-</script>
-</body>
-</html>
+
+<?php require dirname(__DIR__) . '/includes/footer.php'; ?>

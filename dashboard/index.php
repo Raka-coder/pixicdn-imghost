@@ -2,7 +2,7 @@
 /**
  * ============================================================
  * File: dashboard/index.php
- * Deskripsi: Dashboard user (statistik, chart, top gambar)
+ * Deskripsi: Dashboard user (statistik, chart, top gambar) — Bootstrap 5.3
  * Author: Raka Restu Saputra
  * Created: 2026-10-10
  * ============================================================
@@ -13,7 +13,7 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 if (is_file(dirname(__DIR__) . '/config.php')) {
     require_once dirname(__DIR__) . '/config.php';
 }
-require_once dirname(__DIR__) . '/config.example.php'; // dev-fill saja, guarded defined()
+require_once dirname(__DIR__) . '/config.example.php';
 require_once dirname(__DIR__) . '/includes/helpers.php';
 require_once dirname(__DIR__) . '/includes/db.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
@@ -23,12 +23,15 @@ $user = current_user();
 $active = 'dashboard';
 $crumbs = [['label' => 'Dashboard']];
 $back_url = null;
+$load_chartjs = true;
+
 $stats = ['total' => 0, 'views' => 0];
 $chart_labels = [];
 $chart_data = [];
 $views30_labels = [];
 $views30_data = [];
 $top = [];
+
 try {
     $stmt = getDB()->prepare('SELECT COUNT(*) AS total, COALESCE(SUM(views),0) AS views FROM images WHERE user_id = ? AND is_deleted = FALSE');
     $stmt->execute([(int) $user['id']]);
@@ -65,82 +68,212 @@ try {
     error_log('Dashboard stats gagal: ' . $e->getMessage());
 }
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard — PixiCDN</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link rel="stylesheet" href="/assets/app.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-</head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen">
-<?php require dirname(__DIR__) . '/includes/sidebar.php'; ?>
-<main class="max-w-[1120px] w-full mx-auto px-6 py-10">
-<?php require dirname(__DIR__) . '/includes/breadcrumbs.php'; ?>
-<h1 class="page-title mb-6">Halo, <?= sanitize($user['username']) ?></h1>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6" aria-label="Aksi cepat">
-<a href="/upload.php" class="card flex items-center gap-3">
-<span class="p-2 rounded-lg bg-[#EAF0FA] text-[#003087]"><i data-lucide="upload" class="w-5 h-5"></i></span>
-<span><span class="block font-semibold">Upload</span><span class="block text-xs text-[#687173]">Gambar baru</span></span>
-</a>
-<a href="/gallery.php" class="card flex items-center gap-3">
-<span class="p-2 rounded-lg bg-[#EAF0FA] text-[#003087]"><i data-lucide="image" class="w-5 h-5"></i></span>
-<span><span class="block font-semibold">Gallery</span><span class="block text-xs text-[#687173]">Koleksi saya</span></span>
-</a>
-<a href="/dashboard/albums.php" class="card flex items-center gap-3">
-<span class="p-2 rounded-lg bg-[#EAF0FA] text-[#003087]"><i data-lucide="folder-plus" class="w-5 h-5"></i></span>
-<span><span class="block font-semibold">Album</span><span class="block text-xs text-[#687173]">Buat &amp; atur</span></span>
-</a>
-<a href="/dashboard/api-key.php" class="card flex items-center gap-3">
-<span class="p-2 rounded-lg bg-[#EAF0FA] text-[#003087]"><i data-lucide="key" class="w-5 h-5"></i></span>
-<span><span class="block font-semibold">API key</span><span class="block text-xs text-[#687173]">Integrasi</span></span>
-</a>
+<?php
+$page_title = 'Dashboard — PixiCDN';
+require dirname(__DIR__) . '/includes/header.php';
+?>
+
+<div class="container-fluid">
+    <div class="row g-0">
+        <!-- Sidebar Desktop -->
+        <aside class="col-md-3 col-lg-2 d-none d-md-block bg-white border-end border-2 border-primary min-vh-100 position-sticky top-0 sidebar-desktop">
+            <?php require dirname(__DIR__) . '/includes/sidebar.php'; ?>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
+            <!-- Breadcrumb + Back Button -->
+            <nav aria-label="Breadcrumb" class="mb-4">
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <?php if ($back_url !== null): ?>
+                        <a href="<?= sanitize($back_url) ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
+                    <?php endif; ?>
+                    <ol class="breadcrumb mb-0 flex-wrap">
+                        <?php foreach ($crumbs as $i => $c): ?>
+                            <?php if ($i > 0): ?>
+                                <li class="breadcrumb-item"><i class="bi bi-chevron-right text-secondary"></i></li>
+                            <?php endif; ?>
+                            <?php if (isset($c['url'])): ?>
+                                <li class="breadcrumb-item"><a href="<?= sanitize($c['url']) ?>" class="text-decoration-none text-secondary"><?= sanitize($c['label']) ?></a></li>
+                            <?php else: ?>
+                                <li class="breadcrumb-item active fw-semibold text-body-emphasis" aria-current="page"><?= sanitize($c['label']) ?></li>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </ol>
+                </div>
+            </nav>
+
+            <h1 class="page-title mb-4">Halo, <?= sanitize($user['username']) ?></h1>
+
+            <!-- Quick Actions -->
+            <div class="row g-3 mb-4" aria-label="Aksi cepat">
+                <div class="col-6 col-md-3">
+                    <a href="/upload.php" class="card card-trust h-100 d-flex align-items-center gap-3 text-decoration-none">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-box">
+                            <i class="bi bi-cloud-upload fs-4"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Upload</div>
+                            <div class="text-secondary small">Gambar baru</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a href="/gallery.php" class="card card-trust h-100 d-flex align-items-center gap-3 text-decoration-none">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-box">
+                            <i class="bi bi-images fs-4"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Gallery</div>
+                            <div class="text-secondary small">Koleksi saya</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a href="/dashboard/albums.php" class="card card-trust h-100 d-flex align-items-center gap-3 text-decoration-none">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-box">
+                            <i class="bi bi-folder-plus fs-4"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">Album</div>
+                            <div class="text-secondary small">Buat & atur</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a href="/dashboard/api-key.php" class="card card-trust h-100 d-flex align-items-center gap-3 text-decoration-none">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-box">
+                            <i class="bi bi-key fs-4"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold">API Key</div>
+                            <div class="text-secondary small">Integrasi</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card card-trust p-4 text-center h-100">
+                        <p class="text-secondary small mb-1">Total gambar</p>
+                        <p class="display-4 fw-bold tnum text-primary"><?= (int) $stats['total'] ?></p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-trust p-4 text-center h-100">
+                        <p class="text-secondary small mb-1">Total views</p>
+                        <p class="display-4 fw-bold tnum text-info"><?= (int) $stats['views'] ?></p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-trust p-4 text-center h-100">
+                        <p class="text-secondary small mb-1">Storage</p>
+                        <p class="display-4 fw-bold tnum text-warning"><?= round(((int) $user['storage_used']) / 1048576, 2) ?> / <?= round(((int) $user['storage_quota']) / 1048576) ?> MB</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card card-trust h-100">
+                        <div class="card-body">
+                            <h2 class="fw-semibold mb-3">Upload 7 hari terakhir</h2>
+                            <canvas id="ch" height="120"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card card-trust h-100">
+                        <div class="card-body">
+                            <h2 class="fw-semibold mb-3">Views 30 hari terakhir</h2>
+                            <canvas id="chv" height="120"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top 10 -->
+            <div class="card card-trust">
+                <div class="card-body">
+                    <h2 class="fw-semibold mb-3">Top 10 terpopuler</h2>
+                    <?php if ($top): ?>
+                        <div class="row g-3">
+                            <?php foreach ($top as $t): ?>
+                                <div class="col-6 col-md-4 col-xl-2">
+                                    <a href="/image.php?f=<?= sanitize($t['filename']) ?>" class="card card-trust h-100 text-decoration-none d-block">
+                                        <div class="ratio ratio-4x3 overflow-hidden">
+                                            <img src="<?= sanitize($t['thumbnail_url'] ?: $t['public_url']) ?>" alt="<?= sanitize($t['filename']) ?>" loading="lazy" class="w-100 h-100 object-fit-cover">
+                                        </div>
+                                        <div class="p-2">
+                                            <p class="text-secondary small tnum mb-0"><?= (int) $t['views'] ?> views</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <p class="text-secondary text-center py-4 mb-0">Belum ada gambar.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </main>
+    </div>
 </div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<div class="card"><p class="text-[#687173] text-sm">Total gambar</p><p class="tnum font-bold" style="font-size:32px"><?= (int) $stats['total'] ?></p></div>
-<div class="card"><p class="text-[#687173] text-sm">Total views</p><p class="tnum font-bold" style="font-size:32px"><?= (int) $stats['views'] ?></p></div>
-<div class="card"><p class="text-[#687173] text-sm">Storage</p><p class="tnum font-bold" style="font-size:32px"><?= round(((int) $user['storage_used']) / 1048576, 2) ?> / <?= round(((int) $user['storage_quota']) / 1048576) ?> MB</p></div>
-</div>
-<div class="card mt-6">
-<h2 class="font-semibold mb-2 text-lg">Upload 7 hari terakhir</h2>
-<canvas id="ch" height="120"></canvas>
-</div>
-<div class="card mt-6">
-<h2 class="font-semibold mb-2 text-lg">Views 30 hari terakhir</h2>
-<canvas id="chv" height="120"></canvas>
-</div>
-<div class="card mt-6">
-<h2 class="font-semibold mb-2 text-lg">Top 10 terpopuler</h2>
-<div class="grid grid-cols-2 md:grid-cols-5 gap-6">
-<?php foreach ($top as $t): ?>
-<a href="/image.php?f=<?= sanitize($t['filename']) ?>" class="block">
-<img src="<?= sanitize($t['thumbnail_url'] ?: $t['public_url']) ?>" alt="<?= sanitize($t['filename']) ?>" loading="lazy" class="w-full h-24 object-cover rounded-lg border border-[#CBD2D6]">
-<p class="text-xs text-[#687173] mt-1 tnum"><?= (int) $t['views'] ?> views</p>
-</a>
-<?php endforeach; ?>
-</div>
-<?php if (!$top): ?><p class="text-[#687173] text-sm">Belum ada gambar.</p><?php endif; ?>
-</div>
-</main>
-</div>
-<footer class="md:ml-60 border-t border-[#CBD2D6] bg-white">
-<div class="max-w-[1120px] mx-auto px-6 py-4 text-sm text-[#687173]">
-<a href="/" class="hover:text-[#003087] font-medium">Halaman Utama</a>
-</div>
-</footer>
-<script src="https://unpkg.com/lucide@latest"></script>
+
+<?php require dirname(__DIR__) . '/includes/footer.php'; ?>
+
 <script>
-lucide.createIcons();
-new Chart(document.getElementById('ch'), { type: 'bar',
-  data: { labels: <?= json_encode($chart_labels) ?>, datasets: [{ data: <?= json_encode($chart_data) ?>, backgroundColor: 'rgba(0,48,135,0.15)', borderColor: '#003087', borderWidth: 1 }] },
-  options: { plugins: { legend: { display: false } } } });
-new Chart(document.getElementById('chv'), { type: 'line',
-  data: { labels: <?= json_encode($views30_labels) ?>, datasets: [{ data: <?= json_encode($views30_data) ?>, borderColor: '#009CDE', tension: 0.3 }] },
-  options: { plugins: { legend: { display: false } } } });
+document.addEventListener('DOMContentLoaded', function () {
+    // Chart.js initialization
+    new Chart(document.getElementById('ch'), {
+        type: 'bar',
+        data: {
+            labels: <?= json_encode($chart_labels) ?>,
+            datasets: [{
+                data: <?= json_encode($chart_data) ?>,
+                backgroundColor: 'rgba(0, 48, 135, 0.15)',
+                borderColor: '#003087',
+                borderWidth: 1,
+                borderRadius: 4,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+    new Chart(document.getElementById('chv'), {
+        type: 'line',
+        data: {
+            labels: <?= json_encode($views30_labels) ?>,
+            datasets: [{
+                data: <?= json_encode($views30_data) ?>,
+                borderColor: '#009CDE',
+                backgroundColor: 'rgba(0, 156, 222, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.3,
+                pointRadius: 3,
+                pointHoverRadius: 5,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+});
 </script>
-</body>
-</html>

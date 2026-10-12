@@ -2,7 +2,7 @@
 /**
  * ============================================================
  * File: dashboard/albums.php
- * Deskripsi: List + buat album (login) — Fase 3
+ * Deskripsi: List + buat album (login) — Bootstrap 5.3
  * Author: Raka Restu Saputra
  * Created: 2026-10-10
  * ============================================================
@@ -13,7 +13,7 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 if (is_file(dirname(__DIR__) . '/config.php')) {
     require_once dirname(__DIR__) . '/config.php';
 }
-require_once dirname(__DIR__) . '/config.example.php'; // dev-fill saja, guarded defined()
+require_once dirname(__DIR__) . '/config.example.php';
 require_once dirname(__DIR__) . '/includes/helpers.php';
 require_once dirname(__DIR__) . '/includes/db.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
@@ -42,50 +42,108 @@ $stmt->execute([(int) $user['id']]);
 $albums = $stmt->fetchAll();
 $active = 'album';
 $crumbs = [['label' => 'Dashboard', 'url' => '/dashboard/'], ['label' => 'Album']];
-$back_url = null; // breadcrumbs + sidebar sudah cukup (tanpa tombol kembali ganda)
+$back_url = null;
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Album — PixiCDN</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<link rel="stylesheet" href="/assets/app.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-</head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen">
-<?php require dirname(__DIR__) . '/includes/sidebar.php'; ?>
-<main class="max-w-4xl w-full mx-auto px-6 py-10">
-<?php require dirname(__DIR__) . '/includes/breadcrumbs.php'; ?>
-<h1 class="page-title mb-4">Album Saya</h1>
-<?php if ($err !== ''): ?><p class="bg-[#FDE7E7] text-[#D20000] border border-[#D20000] rounded-lg p-3 mb-4 text-sm" role="alert"><?= sanitize($err) ?></p><?php endif; ?>
-<form method="post" class="card mb-6 flex flex-wrap gap-2 items-end">
-<input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
-<label class="flex-1 min-w-40 text-sm font-medium">Nama<input name="name" required maxlength="100" class="input mt-1"></label>
-<label class="flex-1 min-w-40 text-sm font-medium">Deskripsi<input name="description" maxlength="500" class="input mt-1"></label>
-<button class="btn btn-primary">Buat</button>
-</form>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<?php foreach ($albums as $a): ?>
-<a href="/dashboard/album.php?id=<?= (int) $a['id'] ?>" class="card block">
-<p class="font-semibold"><?= sanitize($a['name']) ?></p>
-<p class="text-sm text-[#687173]"><?= (int) $a['image_count'] ?> gambar · <?= $a['is_public'] ? 'publik' : 'privat' ?></p>
-</a>
-<?php endforeach; ?>
+<?php
+$page_title = 'Album — PixiCDN';
+require dirname(__DIR__) . '/includes/header.php';
+?>
+
+<div class="container-fluid">
+    <div class="row g-0">
+        <!-- Sidebar Desktop -->
+        <aside class="col-md-3 col-lg-2 d-none d-md-block bg-white border-end border-2 border-primary min-vh-100 position-sticky top-0 sidebar-desktop">
+            <?php require dirname(__DIR__) . '/includes/sidebar.php'; ?>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
+            <!-- Breadcrumb + Back Button -->
+            <nav aria-label="Breadcrumb" class="mb-4">
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <?php if ($back_url !== null): ?>
+                        <a href="<?= sanitize($back_url) ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
+                    <?php endif; ?>
+                    <ol class="breadcrumb mb-0 flex-wrap">
+                        <?php foreach ($crumbs as $i => $c): ?>
+                            <?php if ($i > 0): ?>
+                                <li class="breadcrumb-item"><i class="bi bi-chevron-right text-secondary"></i></li>
+                            <?php endif; ?>
+                            <?php if (isset($c['url'])): ?>
+                                <li class="breadcrumb-item"><a href="<?= sanitize($c['url']) ?>" class="text-decoration-none text-secondary"><?= sanitize($c['label']) ?></a></li>
+                            <?php else: ?>
+                                <li class="breadcrumb-item active fw-semibold text-body-emphasis" aria-current="page"><?= sanitize($c['label']) ?></li>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </ol>
+                </div>
+            </nav>
+
+            <h1 class="page-title mb-4">Album Saya</h1>
+
+            <?php if ($err !== ''): ?>
+                <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                    <?= sanitize($err) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+                </div>
+            <?php endif; ?>
+
+            <!-- Create Album Form -->
+            <form method="post" class="card card-trust mb-4" data-bs-toggle="validator">
+                <div class="card-body">
+                    <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Nama <span class="text-danger">*</span></label>
+                            <input type="text" name="name" id="name" class="form-control" required maxlength="100" placeholder="Nama album">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="description" class="form-label">Deskripsi</label>
+                            <input type="text" name="description" id="description" class="form-control" maxlength="500" placeholder="Deskripsi album (opsional)">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Buat</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Albums Grid -->
+            <?php if ($albums): ?>
+                <div class="row g-4">
+                    <?php foreach ($albums as $a): ?>
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <a href="/dashboard/album.php?id=<?= (int) $a['id'] ?>" class="card card-trust h-100 text-decoration-none d-block">
+                                <div class="card-body d-flex flex-column">
+                                    <div class="d-flex align-items-center gap-3 mb-3">
+                                        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-box">
+                                            <i class="bi bi-folder fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="fw-semibold mb-0"><?= sanitize($a['name']) ?></h3>
+                                            <p class="text-secondary small mb-0"><?= (int) $a['image_count'] ?> gambar · <?= $a['is_public'] ? 'publik' : 'privat' ?></p>
+                                        </div>
+                                    </div>
+                                    <?php if ($a['description']): ?>
+                                        <p class="text-secondary small mt-auto"><?= sanitize($a['description']) ?></p>
+                                    <?php endif; ?>
+                                </div>
+                            </a>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <!-- Empty State -->
+                <div class="card card-trust text-center py-5">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-secondary-subtle text-secondary rounded-circle mb-3 icon-box-lg">
+                        <i class="bi bi-folder fs-1"></i>
+                    </div>
+                    <h3 class="fw-semibold mb-2">Belum ada album</h3>
+                    <p class="text-secondary mb-4">Buat album pertama Anda menggunakan form di atas.</p>
+                </div>
+            <?php endif; ?>
+        </main>
+    </div>
 </div>
-<?php if (!$albums): ?><p class="text-[#687173]">Belum ada album. Buat yang pertama di atas.</p><?php endif; ?>
-</main>
-</div>
-<footer class="md:ml-60 border-t border-[#CBD2D6] bg-white">
-<div class="max-w-4xl mx-auto px-6 py-4 text-sm text-[#687173]">
-<a href="/" class="hover:text-[#003087] font-medium">Halaman Utama</a>
-</div>
-</footer>
-<script src="https://unpkg.com/lucide@latest"></script>
-<script>
-lucide.createIcons();
-</script>
-</body>
-</html>
+
+<?php require dirname(__DIR__) . '/includes/footer.php'; ?>

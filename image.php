@@ -2,7 +2,7 @@
 /**
  * ============================================================
  * File: image.php
- * Deskripsi: Direct link viewer + view counter (1 IP/jam)
+ * Deskripsi: Direct link viewer + view counter (1 IP/jam) — Bootstrap 5.3
  * Author: Raka Restu Saputra
  * Created: 2026-10-10
  * ============================================================
@@ -13,7 +13,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 if (is_file(__DIR__ . '/config.php')) {
     require_once __DIR__ . '/config.php';
 }
-require_once __DIR__ . '/config.example.php'; // dev-fill saja, guarded defined()
+require_once __DIR__ . '/config.example.php';
 require_once __DIR__ . '/includes/db.php';
 
 $filename = basename($_GET['f'] ?? '');
@@ -53,36 +53,79 @@ try {
 
 $url = (string) $img['public_url'];
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= htmlspecialchars($filename, ENT_QUOTES, 'UTF-8') ?> — PixiCDN</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<link rel="stylesheet" href="/assets/app.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-</head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen" style="font-family:'Work Sans',system-ui,sans-serif">
-<header class="bg-white border-b border-[#CBD2D6] h-16">
-<nav class="max-w-[1120px] mx-auto px-6 h-16 flex items-center justify-between">
-<a href="/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
-<a href="/gallery.php" class="hover:text-[#003087] font-medium">Gallery</a>
-</nav>
-</header>
-<main class="max-w-3xl mx-auto px-6 py-10 text-center">
-<div class="bg-white border border-[#CBD2D6] rounded-xl p-6">
-<img src="<?= htmlspecialchars($url, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($filename, ENT_QUOTES, 'UTF-8') ?>" class="w-full rounded-lg mb-4 border border-[#CBD2D6]">
-<p class="text-[#687173] mb-4"><span class="tnum"><?= (int) $img['views'] ?> views</span> · <?= htmlspecialchars((string) ($img['original_name'] ?? $filename), ENT_QUOTES, 'UTF-8') ?></p>
-<div class="grid gap-3 text-left">
-<?php foreach (['Direct' => $url, 'BBCode' => '[img]' . $url . '[/img]', 'HTML' => '<img src="' . $url . '">'] as $label => $val): ?>
-<label class="text-sm text-[#687173] font-medium"><?= $label ?>
-<input readonly value="<?= htmlspecialchars($val, ENT_QUOTES, 'UTF-8') ?>" onclick="this.select();navigator.clipboard.writeText(this.value)" class="mono w-full mt-1 h-12 px-4 bg-white border border-[#CBD2D6] rounded-lg text-xs"></label>
-<?php endforeach; ?>
-</div>
-</div>
-<p class="mt-6"><a href="/gallery.php" class="text-[#003087] font-medium underline">Kembali ke gallery</a></p>
+<?php
+$page_title = htmlspecialchars($filename, ENT_QUOTES, 'UTF-8') . ' — PixiCDN';
+$is_public_page = true;
+require __DIR__ . '/includes/header.php';
+?>
+
+<main class="flex-grow-1">
+    <div class="container py-5">
+        <!-- Breadcrumb -->
+        <nav aria-label="Breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/gallery.php" class="text-decoration-none text-secondary">Gallery</a></li>
+                <li class="breadcrumb-item"><i class="bi bi-chevron-right text-secondary"></i></li>
+                <li class="breadcrumb-item active fw-semibold text-body-emphasis" aria-current="page"><?= htmlspecialchars($filename, ENT_QUOTES, 'UTF-8') ?></li>
+            </ol>
+        </nav>
+
+        <div class="mx-auto mw-3xl">
+            <div class="card card-trust text-center">
+                <div class="card-body p-4 p-md-5">
+                    <img src="<?= htmlspecialchars($url, ENT_QUOTES, 'UTF-8') ?>" 
+                         alt="<?= htmlspecialchars($filename, ENT_QUOTES, 'UTF-8') ?>" 
+                         class="img-fluid rounded mb-4 border mh-70">
+                    
+                    <p class="text-secondary mb-4">
+                        <span class="tnum"><?= (int) $img['views'] ?> views</span> · 
+                        <?= htmlspecialchars((string) ($img['original_name'] ?? $filename), ENT_QUOTES, 'UTF-8') ?>
+                    </p>
+
+                    <div class="card card-trust bg-body-tertiary">
+                        <div class="card-header bg-transparent border-bottom">
+                            <h5 class="fw-semibold mb-0">Format Link Siap Pakai</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label small text-secondary">Direct Link</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" id="copyDirect" readonly value="<?= htmlspecialchars($url, ENT_QUOTES, 'UTF-8') ?>" class="form-control mono small" aria-label="Direct Link">
+                                        <button class="btn btn-outline-primary" type="button" data-copy-target="copyDirect" data-bs-toggle="tooltip" data-bs-title="Salin direct link" aria-label="Salin direct link">
+                                            <i class="bi bi-clipboard"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small text-secondary">BBCode (Forum)</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" id="copyBBCode" readonly value="[img]<?= htmlspecialchars($url, ENT_QUOTES, 'UTF-8') ?>[/img]" class="form-control mono small" aria-label="BBCode">
+                                        <button class="btn btn-outline-primary" type="button" data-copy-target="copyBBCode" data-bs-toggle="tooltip" data-bs-title="Salin BBCode" aria-label="Salin BBCode">
+                                            <i class="bi bi-clipboard"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small text-secondary">HTML</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" id="copyHTML" readonly value='<img src="<?= htmlspecialchars($url, ENT_QUOTES, 'UTF-8') ?>">' class="form-control mono small" aria-label="HTML">
+                                        <button class="btn btn-outline-primary" type="button" data-copy-target="copyHTML" data-bs-toggle="tooltip" data-bs-title="Salin HTML" aria-label="Salin HTML">
+                                            <i class="bi bi-clipboard"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="/gallery.php" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-1"></i>Kembali ke Gallery</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
-</body>
-</html>
+
+<?php require __DIR__ . '/includes/footer.php'; ?>

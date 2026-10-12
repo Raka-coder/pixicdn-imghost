@@ -2,7 +2,7 @@
 /**
  * ============================================================
  * File: dashboard/album.php
- * Deskripsi: Detail album (tambah/hapus gambar, cover, hapus album) — Fase 3
+ * Deskripsi: Detail album (tambah/hapus gambar, cover, hapus album) — Bootstrap 5.3
  * Author: Raka Restu Saputra
  * Created: 2026-10-10
  * ============================================================
@@ -13,7 +13,7 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 if (is_file(dirname(__DIR__) . '/config.php')) {
     require_once dirname(__DIR__) . '/config.php';
 }
-require_once dirname(__DIR__) . '/config.example.php'; // dev-fill saja, guarded defined()
+require_once dirname(__DIR__) . '/config.example.php';
 require_once dirname(__DIR__) . '/includes/helpers.php';
 require_once dirname(__DIR__) . '/includes/db.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
@@ -81,69 +81,180 @@ $crumbs = [
 ];
 $back_url = null; // HAPUS tombol kembali manual — breadcrumbs + sidebar sudah mewakili
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= sanitize($album['name']) ?> — PixiCDN</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<link rel="stylesheet" href="/assets/app.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-</head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen">
-<?php require dirname(__DIR__) . '/includes/sidebar.php'; ?>
-<main class="max-w-5xl w-full mx-auto px-6 py-10">
-<?php require dirname(__DIR__) . '/includes/breadcrumbs.php'; ?>
-<h1 class="page-title mb-1"><?= sanitize($album['name']) ?></h1>
-<p class="text-[#687173] text-sm mb-4"><?= (int) $album['image_count'] ?> gambar · <?= $album['is_public'] ? 'publik' : 'privat' ?></p>
-<div class="card mb-6 flex flex-wrap items-center gap-3">
-<div class="flex-1 min-w-52">
-<p class="text-sm font-medium mb-1">Link publik album</p>
-<p class="mono text-xs break-all text-[#687173]"><?= sanitize($share_url) ?></p>
+<?php
+$page_title = sanitize($album['name']) . ' — PixiCDN';
+require dirname(__DIR__) . '/includes/header.php';
+?>
+
+<div class="container-fluid">
+    <div class="row g-0">
+        <!-- Sidebar Desktop -->
+        <aside class="col-md-3 col-lg-2 d-none d-md-block bg-white border-end border-2 border-primary min-vh-100 position-sticky top-0 sidebar-desktop">
+            <?php require dirname(__DIR__) . '/includes/sidebar.php'; ?>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
+            <!-- Breadcrumb (hierarchy: Dashboard > Album > [Nama Album]) -->
+            <nav aria-label="Breadcrumb" class="mb-4">
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <?php if ($back_url !== null): ?>
+                        <a href="<?= sanitize($back_url) ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
+                    <?php endif; ?>
+                    <ol class="breadcrumb mb-0 flex-wrap">
+                        <?php foreach ($crumbs as $i => $c): ?>
+                            <?php if ($i > 0): ?>
+                                <li class="breadcrumb-item"><i class="bi bi-chevron-right text-secondary"></i></li>
+                            <?php endif; ?>
+                            <?php if (isset($c['url'])): ?>
+                                <li class="breadcrumb-item"><a href="<?= sanitize($c['url']) ?>" class="text-decoration-none text-secondary"><?= sanitize($c['label']) ?></a></li>
+                            <?php else: ?>
+                                <li class="breadcrumb-item active fw-semibold text-body-emphasis" aria-current="page"><?= sanitize($c['label']) ?></li>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </ol>
+                </div>
+            </nav>
+
+            <h1 class="page-title mb-2"><?= sanitize($album['name']) ?></h1>
+            <p class="text-secondary small mb-4"><?= (int) $album['image_count'] ?> gambar · <?= $album['is_public'] ? 'publik' : 'privat' ?></p>
+
+            <!-- Share Link -->
+            <div class="card card-trust mb-4">
+                <div class="card-body d-flex flex-wrap align-items-center gap-3">
+                    <div class="flex-grow-1">
+                        <p class="text-secondary small mb-1">Link publik album</p>
+                        <div class="input-group input-group-sm">
+                            <input type="text" id="shareUrl" readonly value="<?= sanitize($share_url) ?>" class="form-control mono small" aria-label="Link publik album">
+                            <button class="btn btn-outline-primary" type="button" data-copy-target="shareUrl" data-bs-toggle="tooltip" data-bs-title="Salin link" aria-label="Salin link publik album">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <?php if ($msg !== ''): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?= sanitize($msg) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+                </div>
+            <?php endif; ?>
+            <?php if ($err !== ''): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?= sanitize($err) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+                </div>
+            <?php endif; ?>
+
+            <!-- Add Image Form -->
+            <form method="post" class="card card-trust mb-4" data-bs-toggle="validator">
+                <div class="card-body">
+                    <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
+                    <input type="hidden" name="action" value="add">
+                    <div class="row g-3 align-items-end">
+                        <div class="col">
+                            <label for="filename" class="form-label visually-hidden">Nama file gambar</label>
+                            <input type="text" name="filename" id="filename" class="form-control" required placeholder="nama-file.jpg (milik Anda)" aria-label="Nama file gambar">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tambah</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Album Images Grid -->
+            <?php if ($items): ?>
+                <div class="row g-4 mb-4">
+                    <?php foreach ($items as $img): ?>
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="card card-trust h-100 overflow-hidden position-relative">
+                                <div class="ratio ratio-4x3 overflow-hidden">
+                                    <button type="button" class="p-0 border-0 bg-transparent w-100 h-100" data-bs-toggle="modal" data-bs-target="#imagePreviewModal" data-image-url="<?= sanitize($img['public_url']) ?>" data-image-title="<?= sanitize($img['filename']) ?>" aria-label="Pratinjau <?= sanitize($img['filename']) ?>">
+                                        <img src="<?= sanitize($img['thumbnail_url'] ?: $img['public_url']) ?>"
+                                             alt="<?= sanitize($img['filename']) ?>"
+                                             loading="lazy"
+                                             class="w-100 h-100 object-fit-cover">
+                                    </button>
+                                </div>
+                                <div class="card-body p-2 d-flex gap-2">
+                                    <form method="post" class="flex-grow-1" data-bs-toggle="tooltip" data-bs-title="Jadikan sampul" aria-label="Jadikan sampul">
+                                        <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
+                                        <input type="hidden" name="action" value="cover">
+                                        <input type="hidden" name="image_id" value="<?= (int) $img['id'] ?>">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary w-100"><i class="bi bi-image me-1"></i>Sampul</button>
+                                    </form>
+                                    <form method="post" class="flex-grow-1" onsubmit="return confirm('Keluarkan dari album?')" data-bs-toggle="tooltip" data-bs-title="Keluarkan dari album" aria-label="Keluarkan dari album">
+                                        <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
+                                        <input type="hidden" name="action" value="remove">
+                                        <input type="hidden" name="image_id" value="<?= (int) $img['id'] ?>">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger w-100"><i class="bi bi-box-arrow-right me-1"></i>Keluarkan</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="card card-trust text-center py-5 mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-secondary-subtle text-secondary rounded-circle mb-3 icon-box-lg">
+                        <i class="bi bi-image fs-1"></i>
+                    </div>
+                    <h3 class="fw-semibold mb-2">Album ini kosong</h3>
+                    <p class="text-secondary mb-3">Tambahkan gambar pertama menggunakan form di atas.</p>
+                </div>
+            <?php endif; ?>
+
+            <!-- Delete Album -->
+            <form method="post" class="card card-trust border-danger" onsubmit="return confirm('Hapus album ini? (gambar tidak ikut terhapus)')">
+                <div class="card-body">
+                    <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
+                    <input type="hidden" name="action" value="delete">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <h3 class="fw-semibold text-danger mb-1">Hapus Album</h3>
+                            <p class="text-secondary small mb-0">Album akan dihapus permanen. Gambar di dalamnya tidak terhapus.</p>
+                        </div>
+                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash me-1"></i>Hapus album</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="mt-3 text-center">
+                <a href="/dashboard/albums.php" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Semua album</a>
+            </div>
+        </main>
+    </div>
 </div>
-<button id="share-copy" class="btn btn-secondary btn-sm" data-url="<?= sanitize($share_url) ?>">Salin link</button>
+
+<!-- Image Preview Modal -->
+<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-xl">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold" id="imagePreviewModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body py-4 text-center">
+                <img id="imagePreviewImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Pratinjau gambar" class="img-fluid rounded mh-70">
+            </div>
+        </div>
+    </div>
 </div>
-<?php if ($msg !== ''): ?><p class="bg-[#E6F4EA] text-[#019C34] border border-[#019C34] rounded-lg p-3 mb-4 text-sm"><?= sanitize($msg) ?></p><?php endif; ?>
-<?php if ($err !== ''): ?><p class="bg-[#FDE7E7] text-[#D20000] border border-[#D20000] rounded-lg p-3 mb-4 text-sm" role="alert"><?= sanitize($err) ?></p><?php endif; ?>
-<form method="post" class="flex gap-2 mb-6">
-<input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
-<input type="hidden" name="action" value="add">
-<input name="filename" required placeholder="nama-file.jpg (milik Anda)" class="input flex-1" aria-label="Nama file gambar">
-<button class="btn btn-primary">Tambah</button>
-</form>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-<?php foreach ($items as $img): ?>
-<div class="bg-white border border-[#CBD2D6] rounded-xl overflow-hidden">
-<img src="<?= sanitize($img['thumbnail_url'] ?: $img['public_url']) ?>" alt="<?= sanitize($img['filename']) ?>" loading="lazy" class="w-full h-32 object-cover">
-<div class="p-2 flex gap-3 text-xs font-medium">
-<form method="post"><input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>"><input type="hidden" name="action" value="cover"><input type="hidden" name="image_id" value="<?= (int) $img['id'] ?>"><button class="text-[#003087]">Sampul</button></form>
-<form method="post" onsubmit="return confirm('Keluarkan dari album?')"><input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>"><input type="hidden" name="action" value="remove"><input type="hidden" name="image_id" value="<?= (int) $img['id'] ?>"><button class="text-[#D20000]">Keluarkan</button></form>
-</div>
-</div>
-<?php endforeach; ?>
-</div>
-<form method="post" class="mt-8" onsubmit="return confirm('Hapus album ini? (gambar tidak ikut terhapus)')">
-<input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
-<input type="hidden" name="action" value="delete">
-<button class="btn btn-danger">Hapus album</button>
-</form>
-<p class="mt-4 text-sm"><a href="/dashboard/albums.php" class="text-[#003087] underline">Semua album</a></p>
-</main>
-</div>
-<footer class="md:ml-60 border-t border-[#CBD2D6] bg-white">
-<div class="max-w-5xl mx-auto px-6 py-4 text-sm text-[#687173]">
-<a href="/" class="hover:text-[#003087] font-medium">Halaman Utama</a>
-</div>
-</footer>
-<script src="https://unpkg.com/lucide@latest"></script>
+
+<?php require dirname(__DIR__) . '/includes/footer.php'; ?>
+
 <script>
-lucide.createIcons();
-document.getElementById('share-copy').addEventListener('click', function () {
-    navigator.clipboard.writeText(this.dataset.url);
-    this.textContent = 'Tersalin!';
+document.addEventListener('DOMContentLoaded', function () {
+    // Copy share URL
+    const shareCopy = document.getElementById('share-copy');
+    if (shareCopy) {
+        shareCopy.addEventListener('click', async function () {
+            await navigator.clipboard.writeText(this.dataset.url);
+            this.textContent = 'Tersalin!';
+            setTimeout(() => this.textContent = 'Salin link', 1500);
+        });
+    }
 });
 </script>
-</body>
-</html>

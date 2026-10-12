@@ -2,7 +2,7 @@
 /**
  * ============================================================
  * File: auth/register.php
- * Deskripsi: Registrasi user + tampilkan recovery code sekali
+ * Deskripsi: Registrasi user + tampilkan recovery code sekali — Bootstrap 5.3
  * Author: Raka Restu Saputra
  * Created: 2026-10-10
  * ============================================================
@@ -13,7 +13,7 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 if (is_file(dirname(__DIR__) . '/config.php')) {
     require_once dirname(__DIR__) . '/config.php';
 }
-require_once dirname(__DIR__) . '/config.example.php'; // dev-fill saja, guarded defined()
+require_once dirname(__DIR__) . '/config.example.php';
 require_once dirname(__DIR__) . '/includes/helpers.php';
 require_once dirname(__DIR__) . '/includes/db.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
@@ -61,39 +61,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 $just_done = isset($_GET['done']) && $recovery_code !== '';
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daftar — PixiCDN</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<link rel="stylesheet" href="/assets/app.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-</head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen flex items-center justify-center px-4" style="font-family:'Work Sans',system-ui,sans-serif">
-<main class="w-full max-w-md bg-white border border-[#CBD2D6] rounded-xl p-6">
-<p class="mb-4"><a href="/" class="text-xl font-bold text-[#003087]">PixiCDN</a></p>
-<h1 class="font-semibold mb-4" style="font-size:24px">Daftar akun gratis</h1>
-<?php if ($just_done): ?>
-<div class="bg-[#FFF8E1] border border-[#F5BA2E] rounded-lg p-4 mb-4">
-<p class="font-semibold mb-1">Simpan recovery code ini sekarang!</p>
-<p class="tnum mono font-semibold" style="font-size:32px"><?= sanitize($recovery_code) ?></p>
-<p class="text-sm text-[#687173] mt-1">Ditampilkan sekali saja. Dipakai untuk reset password.</p>
-<a href="/dashboard/" class="btn btn-primary mt-3">Ke Dashboard</a>
-</div>
-<?php else: ?>
-<?php if ($error !== ''): ?><p class="bg-[#FDE7E7] text-[#D20000] border border-[#D20000] rounded-lg p-3 mb-4 text-sm" role="alert"><?= sanitize($error) ?></p><?php endif; ?>
-<form method="post" class="space-y-3">
-<input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
-<label class="block text-sm font-medium">Username<input name="username" required minlength="3" maxlength="30" pattern="[a-zA-Z0-9_]+" class="input mt-1"></label>
-<label class="block text-sm font-medium">Password (min 8)<input type="password" name="password" required minlength="8" class="input mt-1"></label>
-<label class="block text-sm font-medium">Konfirmasi<input type="password" name="confirm" required class="input mt-1"></label>
-<button class="btn btn-primary w-full">Daftar</button>
-</form>
-<p class="text-sm text-[#687173] mt-3"><a href="/auth/login.php" class="text-[#003087] underline">Sudah punya akun? Masuk</a></p>
-<?php endif; ?>
+<?php
+$page_title = 'Daftar — PixiCDN';
+$is_auth_page = true;
+require dirname(__DIR__) . '/includes/header.php';
+?>
+
+<main class="flex-grow-1 d-flex align-items-center justify-center py-5 px-3">
+    <div class="w-100 auth-card">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4 p-md-5">
+                <h1 class="fw-semibold mb-4 text-center auth-title">Daftar akun gratis</h1>
+
+                <?php if ($just_done): ?>
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <h5 class="alert-heading fw-semibold mb-1">Simpan recovery code ini sekarang!</h5>
+                        <p class="mono fw-semibold fs-3 mb-1"><?= sanitize($recovery_code) ?></p>
+                        <p class="text-secondary small mb-3">Ditampilkan sekali saja. Dipakai untuk reset password.</p>
+                        <a href="/dashboard/" class="btn btn-primary w-100">Ke Dashboard</a>
+                    </div>
+                <?php else: ?>
+                    <?php if ($error !== ''): ?>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <?= sanitize($error) ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+                        </div>
+                    <?php endif; ?>
+
+                    <form method="post" class="needs-validation" novalidate>
+                        <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
+
+                        <div class="form-floating mb-3">
+                            <input type="text" name="username" id="username" class="form-control" placeholder="Username" required minlength="3" maxlength="30" pattern="[a-zA-Z0-9_]+" autocomplete="username">
+                            <label for="username"><i class="bi bi-person me-2"></i>Username</label>
+                            <div class="invalid-feedback">Username 3-30 karakter, huruf/angka/underscore.</div>
+                        </div>
+
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="password" name="password" id="password" class="form-control pe-5" placeholder="Password" required minlength="8" autocomplete="new-password">
+                            <label for="password"><i class="bi bi-lock me-2"></i>Password (min 8 karakter)</label>
+                            <button type="button" class="btn btn-link text-secondary p-0 position-absolute end-0 top-50 translate-middle-y me-3" data-bs-toggle="password" data-bs-target="password" aria-label="Tampilkan/sembunyikan password">
+                                <i class="bi bi-eye-slash fs-5"></i>
+                            </button>
+                            <div class="invalid-feedback">Password minimal 8 karakter.</div>
+                        </div>
+
+                        <!-- Password Strength Meter -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span class="text-secondary" id="passwordStrengthLabel">Kekuatan: —</span>
+                            </div>
+                        <div class="progress progress-strength">
+                            <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" id="passwordStrength" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="password" name="confirm" id="confirm" class="form-control" placeholder="Konfirmasi Password" required autocomplete="new-password">
+                            <label for="confirm"><i class="bi bi-lock-fill me-2"></i>Konfirmasi Password</label>
+                            <div class="invalid-feedback">Konfirmasi password tidak sama.</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mt-2">Daftar</button>
+                    </form>
+
+                    <p class="text-center text-secondary small mt-4">
+                        <a href="/auth/login.php" class="text-primary text-decoration-none">Sudah punya akun? Masuk</a>
+                    </p>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
 </main>
-</body>
-</html>
+
+<?php require dirname(__DIR__) . '/includes/footer.php'; ?>

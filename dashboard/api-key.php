@@ -2,7 +2,7 @@
 /**
  * ============================================================
  * File: dashboard/api-key.php
- * Deskripsi: Kelola API key (tampil sekali saja) — Tahap 4
+ * Deskripsi: Kelola API key (tampil sekali saja) — Bootstrap 5.3
  * Author: Raka Restu Saputra
  * Created: 2026-10-10
  * ============================================================
@@ -13,7 +13,7 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 if (is_file(dirname(__DIR__) . '/config.php')) {
     require_once dirname(__DIR__) . '/config.php';
 }
-require_once dirname(__DIR__) . '/config.example.php'; // dev-fill saja, guarded defined()
+require_once dirname(__DIR__) . '/config.example.php';
 require_once dirname(__DIR__) . '/includes/helpers.php';
 require_once dirname(__DIR__) . '/includes/db.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
@@ -52,59 +52,113 @@ $row = $stmt->fetch();
 $has_key = !empty($row['api_key']);
 $masked = $has_key ? '••••••••' . substr((string) $row['api_key'], -6) : '';
 $active = 'api-key';
-$crumbs = [['label' => 'Dashboard', 'url' => '/dashboard/'], ['label' => 'API key']];
+$crumbs = [['label' => 'Dashboard', 'url' => '/dashboard/'], ['label' => 'API Key']];
 $back_url = null;
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>API Key — PixiCDN</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<link rel="stylesheet" href="/assets/app.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-</head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen">
-<?php require dirname(__DIR__) . '/includes/sidebar.php'; ?>
-<main class="max-w-2xl w-full mx-auto px-6 py-10">
-<?php require dirname(__DIR__) . '/includes/breadcrumbs.php'; ?>
-<h1 class="page-title mb-4">API Key</h1>
-<p class="text-[#687173] text-sm mb-4">Pakai di header <code class="mono bg-white border border-[#CBD2D6] rounded px-2 py-1">X-API-Key</code>. Key hanya ditampilkan sekali setelah generate.</p>
-<?php if ($plain !== ''): ?>
-<div class="bg-[#FFF8E1] border border-[#F5BA2E] rounded-lg p-4 mb-4">
-<p class="font-semibold">Salin sekarang, tidak bisa dilihat lagi:</p>
-<p class="mono break-all mt-1"><?= sanitize($plain) ?></p>
+<?php
+$page_title = 'API Key — PixiCDN';
+require dirname(__DIR__) . '/includes/header.php';
+?>
+
+<div class="container-fluid">
+    <div class="row g-0">
+        <!-- Sidebar Desktop -->
+        <aside class="col-md-3 col-lg-2 d-none d-md-block bg-white border-end border-2 border-primary min-vh-100 position-sticky top-0 sidebar-desktop">
+            <?php require dirname(__DIR__) . '/includes/sidebar.php'; ?>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
+            <!-- Breadcrumb -->
+            <nav aria-label="Breadcrumb" class="mb-4">
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <?php if ($back_url !== null): ?>
+                        <a href="<?= sanitize($back_url) ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
+                    <?php endif; ?>
+                    <ol class="breadcrumb mb-0 flex-wrap">
+                        <?php foreach ($crumbs as $i => $c): ?>
+                            <?php if ($i > 0): ?>
+                                <li class="breadcrumb-item"><i class="bi bi-chevron-right text-secondary"></i></li>
+                            <?php endif; ?>
+                            <?php if (isset($c['url'])): ?>
+                                <li class="breadcrumb-item"><a href="<?= sanitize($c['url']) ?>" class="text-decoration-none text-secondary"><?= sanitize($c['label']) ?></a></li>
+                            <?php else: ?>
+                                <li class="breadcrumb-item active fw-semibold text-body-emphasis" aria-current="page"><?= sanitize($c['label']) ?></li>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </ol>
+                </div>
+            </nav>
+
+            <h1 class="page-title mb-4">API Key</h1>
+            <p class="text-secondary small mb-4">Pakai di header <code class="mono small bg-body-tertiary border rounded px-2 py-1">X-API-Key</code>. Key hanya ditampilkan sekali setelah generate.</p>
+
+            <?php if ($plain !== ''): ?>
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <h5 class="alert-heading fw-semibold mb-1">Salin sekarang, tidak bisa dilihat lagi:</h5>
+                    <div class="d-flex gap-2 mt-2">
+                        <input type="text" id="newApiKey" readonly value="<?= sanitize($plain) ?>" class="form-control mono small" aria-label="API Key baru">
+                        <button class="btn btn-outline-primary" type="button" data-copy-target="newApiKey" data-bs-toggle="tooltip" data-bs-title="Salin ke clipboard" aria-label="Salin API Key">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($msg !== ''): ?>
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <?= sanitize($msg) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+                </div>
+            <?php endif; ?>
+
+            <div class="card card-trust mb-4">
+                <div class="card-body">
+                    <p class="mb-2">Status: <span class="fw-semibold <?= $has_key ? 'text-success' : 'text-secondary' ?>"><?= $has_key ? 'Aktif (' . sanitize($masked) . ')' : 'Belum ada' ?></span></p>
+                    <?php if ($has_key): ?>
+                        <p class="text-secondary small mb-0">Dibuat: <?= sanitize((string) ($row['api_key_created_at'] ?? '-')) ?></p>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <form method="post" class="d-flex gap-2 mb-3">
+                <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
+                <input type="hidden" name="action" value="<?= $has_key ? 'regenerate' : 'generate' ?>">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-<?= $has_key ? 'arrow-clockwise' : 'plus-lg' ?> me-1"></i><?= $has_key ? 'Regenerate' : 'Generate' ?></button>
+            </form>
+
+            <?php if ($has_key): ?>
+                <form method="post" class="d-flex gap-2" onsubmit="return confirm('Hapus API key?')">
+                    <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
+                    <input type="hidden" name="action" value="revoke">
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash me-1"></i>Hapus</button>
+                </form>
+            <?php endif; ?>
+
+            <!-- API Documentation Card -->
+            <div class="card card-trust mt-5">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="fw-semibold mb-0">Contoh Penggunaan</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-secondary small mb-3">Upload gambar via API:</p>
+                    <pre class="mono small bg-dark text-light rounded-3 p-3 overflow-auto mb-3"><code>curl -H "X-API-Key: <key>" \
+  -F "image=@foto.jpg" \
+  https://pixicdn.erdtreeproject.my.id/api/upload.php</code></pre>
+                    <p class="text-secondary small mb-3">Response JSON:</p>
+                    <pre class="mono small bg-body-tertiary border rounded-3 p-3 overflow-auto"><code>{
+  "success": true,
+  "data": [{
+    "url": "https://pixicdn.erdtreeproject.my.id/abc123.jpg",
+    "bbcode": "[img]https://pixicdn.erdtreeproject.my.id/abc123.jpg[/img]",
+    "html": "<img src=\"https://pixicdn.erdtreeproject.my.id/abc123.jpg\">"
+  }]
+}</code></pre>
+                </div>
+            </div>
+        </main>
+    </div>
 </div>
-<?php endif; ?>
-<?php if ($msg !== ''): ?><p class="bg-white border border-[#CBD2D6] rounded-lg p-3 mb-4 text-sm"><?= sanitize($msg) ?></p><?php endif; ?>
-<div class="card mb-4">
-<p>Status: <?= $has_key ? 'aktif (' . sanitize($masked) . ')' : 'belum ada' ?></p>
-<?php if ($has_key): ?><p class="text-sm text-[#687173]">Dibuat: <?= sanitize((string) ($row['api_key_created_at'] ?? '-')) ?></p><?php endif; ?>
-</div>
-<form method="post" class="flex gap-2">
-<input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
-<input type="hidden" name="action" value="<?= $has_key ? 'regenerate' : 'generate' ?>">
-<button class="btn btn-primary"><?= $has_key ? 'Regenerate' : 'Generate' ?></button>
-</form>
-<?php if ($has_key): ?>
-<form method="post" class="mt-2" onsubmit="return confirm('Hapus API key?')">
-<input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
-<input type="hidden" name="action" value="revoke">
-<button class="btn btn-danger">Hapus</button>
-</form>
-<?php endif; ?>
-</main>
-</div>
-<footer class="md:ml-60 border-t border-[#CBD2D6] bg-white">
-<div class="max-w-2xl mx-auto px-6 py-4 text-sm text-[#687173]">
-<a href="/" class="hover:text-[#003087] font-medium">Halaman Utama</a>
-</div>
-</footer>
-<script src="https://unpkg.com/lucide@latest"></script>
-<script>
-lucide.createIcons();
-</script>
-</body>
-</html>
+
+<?php require dirname(__DIR__) . '/includes/footer.php'; ?>
