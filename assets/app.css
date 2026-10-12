@@ -1,0 +1,176 @@
+/* ============================================================
+ * File: assets/app.css
+ * Deskripsi: Komponen UI PixiCDN — Trust Blue (Work Sans + JetBrains Mono).
+ *   Satu sumber kebenaran untuk tombol/input/kartu agar seragam
+ *   di semua halaman. Dipakai bersama Tailwind CSS v4 (CDN).
+ * ============================================================ */
+
+body {
+    font-family: 'Work Sans', system-ui, -apple-system, sans-serif;
+}
+
+.mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.tnum {
+    font-feature-settings: "tnum";
+}
+
+/* ---- Tombol: 48px, radius 8px, Inter diganti Work Sans 600 ---- */
+.btn:not(.hidden) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding-left: 24px;
+    padding-right: 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    min-width: 120px;
+    cursor: pointer;
+    transition: background-color 150ms ease, box-shadow 150ms ease;
+    text-align: center;
+}
+
+.btn:focus-visible,
+.navlink:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid #003087;
+    outline-offset: 2px;
+}
+
+.btn-primary {
+    background: #003087;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #00246B;
+}
+
+.btn-secondary {
+    background: #fff;
+    color: #003087;
+    border: 2px solid #003087;
+}
+
+.btn-secondary:hover {
+    background: #F5F7FA;
+}
+
+.btn-gold {
+    background: #F5BA2E;
+    color: #1A1A2E;
+}
+
+.btn-gold:hover {
+    background: #E5A91E;
+}
+
+.btn-danger {
+    background: #D20000;
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background: #A80000;
+}
+
+/* ---- Layar sangat kecil: tombol boleh menyusut ---- */
+@media (max-width: 400px) {
+    .btn {
+        min-width: 0;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+
+/* ---- Kartu: putih, border, radius 12px, padding 24px, shadow navy L1 ---- */
+.card {
+    background: #fff;
+    border: 1px solid #CBD2D6;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 4px rgba(0, 48, 135, 0.06);
+}
+
+a.card:hover {
+    box-shadow: 0 4px 16px rgba(0, 48, 135, 0.1);
+}
+
+/* ---- Input: 48px, radius 8px, border, fokus navy 2px ---- */
+.input {
+    width: 100%;
+    min-height: 48px;
+    padding-left: 16px;
+    padding-right: 16px;
+    background: #fff;
+    border: 1px solid #CBD2D6;
+    border-radius: 8px;
+    color: #1A1A2E;
+    font-size: 16px;
+}
+
+.input:focus {
+    outline: none;
+    border: 2px solid #003087;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* ---- Pagination angka halaman ---- */
+.btn-page {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    min-width: 48px;
+    padding-left: 16px;
+    padding-right: 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    background: #fff;
+    border: 1px solid #CBD2D6;
+}
+
+.btn-page:hover {
+    background: #F5F7FA;
+}
+
+.btn-page.active {
+    background: #003087;
+    border-color: #003087;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* ---- Link navigasi dashboard ---- */
+.navlink {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 15px;
+    color: #1A1A2E;
+}
+
+.navlink:hover {
+    background: #F5F7FA;
+}
+
+.navlink.active {
+    background: #EAF0FA;
+    color: #003087;
+    font-weight: 600;
+}
+
+.navlink svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}

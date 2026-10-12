@@ -34,17 +34,17 @@ try {
 <title>PixiCDN — Hosting Gambar Gratis dengan Direct Link</title>
 <meta name="description" content="PixiCDN: upload gambar, dapatkan direct link permanen untuk forum, blog, dan aplikasi. Gratis, tanpa iklan, dengan API.">
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="stylesheet" href="/assets/app.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-body { font-family: 'Inter', system-ui, sans-serif; }
 .tnum { font-feature-settings: "tnum"; }
 .card-shadow { box-shadow: 0 1px 4px rgba(0,48,135,0.06); }
 .card-shadow:hover { box-shadow: 0 4px 16px rgba(0,48,135,0.1); }
 </style>
 </head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen" style="font-family:'Inter',system-ui,sans-serif">
+<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen" style="font-family:'Work Sans',system-ui,sans-serif">
 
 <!-- Navigasi: bar putih 64px -->
 <header class="bg-white border-b border-[#CBD2D6] h-16 sticky top-0 z-10">
@@ -57,8 +57,8 @@ body { font-family: 'Inter', system-ui, sans-serif; }
 <a href="/gallery.php" class="hover:text-[#003087] hover:decoration-2 hover:underline hover:underline-offset-4">Gallery</a>
 </div>
 <div class="flex items-center gap-3">
-<a href="/auth/login.php" class="hidden sm:inline-block h-12 px-6 leading-[48px] text-[#003087] font-semibold rounded-lg border-2 border-[#003087]">Masuk</a>
-<a href="/auth/register.php" class="h-12 px-6 leading-[48px] bg-[#003087] hover:bg-[#00246B] text-white font-semibold rounded-lg min-w-[120px] text-center">Upload gratis</a>
+<a href="/auth/login.php" class="btn btn-secondary hidden sm:inline-flex">Masuk</a>
+<a href="/auth/register.php" class="btn btn-primary">Upload gratis</a>
 </div>
 </nav>
 </header>
@@ -72,8 +72,8 @@ body { font-family: 'Inter', system-ui, sans-serif; }
 <h1 class="font-bold tracking-tight" style="font-size:40px;line-height:1.25;letter-spacing:-0.02em">Hosting gambar dengan direct link permanen</h1>
 <p class="mt-4 text-lg text-[#687173]" style="line-height:1.5">Upload screenshot, foto, atau diagram — dapatkan link yang bisa di-embed di forum, blog, dan media sosial. Data tersimpan di server sendiri, bukan milik platform lain.</p>
 <div class="mt-8 flex flex-wrap gap-4">
-<a href="/auth/register.php" class="h-12 px-6 leading-[48px] bg-[#003087] hover:bg-[#00246B] text-white font-semibold rounded-lg min-w-[120px] text-center">Upload sekarang</a>
-<a href="/auth/register.php" class="h-12 px-6 leading-[48px] bg-[#F5BA2E] text-[#1A1A2E] font-semibold rounded-lg min-w-[120px] text-center">Buat akun gratis</a>
+<a href="/auth/register.php" class="btn btn-primary">Upload sekarang</a>
+<a href="/auth/register.php" class="btn btn-gold">Buat akun gratis</a>
 </div>
 <p class="mt-4 text-sm text-[#687173]">Wajib daftar gratis dulu — tanpa kartu kredit · JPG, PNG, GIF, WebP hingga 5 MB</p>
 </div>
@@ -86,7 +86,7 @@ body { font-family: 'Inter', system-ui, sans-serif; }
 <div class="bg-[#F5F7FA] border border-[#CBD2D6] rounded-lg p-3 break-all">[img]https://pixicdn.erdtreeproject.my.id/abc123.jpg[/img]</div>
 <div class="bg-[#F5F7FA] border border-[#CBD2D6] rounded-lg p-3 break-all">&lt;img src="https://pixicdn.erdtreeproject.my.id/abc123.jpg"&gt;</div>
 </div>
-<a href="/auth/register.php" class="mt-4 inline-block h-12 px-6 leading-[48px] bg-[#003087] hover:bg-[#00246B] text-white font-semibold rounded-lg">Coba langsung — daftar dulu</a>
+<a href="/auth/register.php" class="btn btn-primary mt-4">Coba langsung — daftar dulu</a>
 </div>
 </section>
 
@@ -136,9 +136,9 @@ body { font-family: 'Inter', system-ui, sans-serif; }
 <section class="mb-16">
 <h2 class="font-semibold text-center" style="font-size:32px">Dibuat untuk cara Anda bekerja</h2>
 <div class="grid md:grid-cols-3 gap-6 mt-8">
-<div class="bg-white border-l-4 border-l-[#019C34] border border-[#CBD2D6] rounded-xl p-6 card-shadow"><h3 class="font-semibold">Forum &amp; komunitas</h3><p class="text-[#687173] text-sm mt-1">Screenshot bukti dan diskusi dengan BBCode siap tempel.</p></div>
-<div class="bg-white border-l-4 border-l-[#F5BA2E] border border-[#CBD2D6] rounded-xl p-6 card-shadow"><h3 class="font-semibold">Blogger &amp; kreator</h3><p class="text-[#687173] text-sm mt-1">Galeri ringan untuk ilustrasi artikel tanpa plugin berat.</p></div>
-<div class="bg-white border-l-4 border-l-[#009CDE] border border-[#CBD2D6] rounded-xl p-6 card-shadow"><h3 class="font-semibold">Developer</h3><p class="text-[#687173] text-sm mt-1">API key + endpoint JSON untuk pipeline upload otomatis.</p></div>
+<div class="bg-white border border-[#CBD2D6] rounded-xl p-6 card-shadow"><p class="flex items-center gap-2 font-semibold"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#019C34"></span>Forum &amp; komunitas</p><p class="text-[#687173] text-sm mt-1">Screenshot bukti dan diskusi dengan BBCode siap tempel.</p></div>
+<div class="bg-white border border-[#CBD2D6] rounded-xl p-6 card-shadow"><p class="flex items-center gap-2 font-semibold"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#C68A00"></span>Blogger &amp; kreator</p><p class="text-[#687173] text-sm mt-1">Galeri ringan untuk ilustrasi artikel tanpa plugin berat.</p></div>
+<div class="bg-white border border-[#CBD2D6] rounded-xl p-6 card-shadow"><p class="flex items-center gap-2 font-semibold"><span class="inline-block w-2.5 h-2.5 rounded-full" style="background:#009CDE"></span>Developer</p><p class="text-[#687173] text-sm mt-1">API key + endpoint JSON untuk pipeline upload otomatis.</p></div>
 </div>
 </section>
 
@@ -146,7 +146,7 @@ body { font-family: 'Inter', system-ui, sans-serif; }
 <section id="api" class="mb-16 bg-white border border-[#CBD2D6] rounded-xl p-6 md:p-8 card-shadow">
 <h2 class="font-semibold" style="font-size:24px">Integrasi dalam hitungan menit</h2>
 <p class="text-[#687173] mt-2 mb-4">Satu header <span class="font-mono text-sm bg-[#F5F7FA] border border-[#CBD2D6] rounded px-2 py-1">X-API-Key</span> untuk semua endpoint. Ambil key di dashboard setelah daftar.</p>
-<pre class="font-mono text-sm bg-[#1A1A2E] text-white rounded-lg p-4 overflow-x-auto" style="font-family:'JetBrains Mono',monospace">curl -H "X-API-Key: &lt;key&gt;" \
+<pre class="mono text-sm bg-[#1A1A2E] text-white rounded-lg p-4 overflow-x-auto">curl -H "X-API-Key: &lt;key&gt;" \
   -F image=@foto.jpg \
   https://pixicdn.erdtreeproject.my.id/api/upload.php</pre>
 <p class="mt-4"><a href="/auth/register.php" class="text-[#003087] font-semibold hover:underline">Dapatkan API key gratis →</a></p>
@@ -157,8 +157,8 @@ body { font-family: 'Inter', system-ui, sans-serif; }
 <h2 class="font-bold" style="font-size:32px">Mulai hosting gambar Anda hari ini</h2>
 <p class="mt-2 text-white/80">Gratis, tanpa kartu kredit, tanpa iklan.</p>
 <div class="mt-6 flex flex-wrap justify-center gap-4">
-<a href="/auth/register.php" class="h-12 px-6 leading-[48px] bg-[#F5BA2E] text-[#1A1A2E] font-semibold rounded-lg min-w-[120px]">Upload pertama</a>
-<a href="/gallery.php" class="h-12 px-6 leading-[48px] bg-white text-[#003087] font-semibold rounded-lg min-w-[120px]">Lihat gallery</a>
+<a href="/auth/register.php" class="btn btn-gold">Upload pertama</a>
+<a href="/gallery.php" class="btn btn-secondary">Lihat gallery</a>
 </div>
 </section>
 

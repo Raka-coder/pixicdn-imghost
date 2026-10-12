@@ -17,6 +17,11 @@ migrations/*.local.sql
 Thumbs.db
 .vscode/
 .idea/
+.agents/
+.claude/
+.qwen/
+plan.md
+skills-lock.json
 *.swp
 *.bak
 *.backup

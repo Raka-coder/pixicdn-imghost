@@ -27,11 +27,13 @@ $token = csrfToken();
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Upload — PixiCDN</title>
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="stylesheet" href="/assets/app.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen" style="font-family:'Inter',system-ui,sans-serif">
+<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen" style="font-family:'Work Sans',system-ui,sans-serif">
 <header class="bg-white border-b border-[#CBD2D6] h-16">
 <nav class="max-w-[1120px] mx-auto px-6 h-16 flex items-center justify-between">
 <a href="/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
@@ -50,9 +52,9 @@ $token = csrfToken();
 <div id="preview" class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4"></div>
 </div>
 <div class="h-2 bg-white border border-[#CBD2D6] rounded mt-4 overflow-hidden"><div id="bar" class="h-full w-0 bg-[#003087]"></div></div>
-<button id="go" class="mt-4 h-12 px-6 bg-[#003087] hover:bg-[#00246B] text-white font-semibold rounded-lg w-full">Upload</button>
+<button id="go" class="btn btn-primary mt-4 w-full">Upload</button>
 <label class="block text-sm text-[#687173] mt-3">Hapus otomatis
-<select id="exp" class="ml-2 h-12 px-3 bg-white border border-[#CBD2D6] rounded-lg">
+<select id="exp" class="input ml-2" style="width:auto;display:inline-block">
 <option value="never">Tidak pernah</option>
 <option value="1h">1 jam</option>
 <option value="1d">1 hari</option>
@@ -117,8 +119,8 @@ function row(label, val) {
   const id = 'c' + Math.random().toString(36).slice(2);
   return '<label class="block text-sm text-[#687173] mb-2">' + label
     + '<span class="flex gap-2 mt-1"><input id="' + id + '" readonly value="' + val.replace(/"/g, '&quot;')
-    + '" class="flex-1 h-12 px-3 bg-white border border-[#CBD2D6] rounded-lg text-xs" style="font-family:\'JetBrains Mono\',monospace">'
-    + '<button onclick="navigator.clipboard.writeText(document.getElementById(\'' + id + '\').value);this.textContent=\'Copied!\';toast(\'Disalin\',true)" class="px-3 h-12 bg-[#003087] text-white rounded-lg text-xs font-semibold">Copy</button></span></label>';
+    + '" class="mono flex-1 h-12 px-3 bg-white border border-[#CBD2D6] rounded-lg text-xs">'
+    + '<button onclick="navigator.clipboard.writeText(document.getElementById(\'' + id + '\').value);this.textContent=\'Copied!\';toast(\'Disalin\',true)" class="btn btn-primary text-xs">Copy</button></span></label>';
 }
 </script>
 </body>

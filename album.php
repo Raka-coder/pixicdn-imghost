@@ -72,10 +72,12 @@ try {
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= sanitize($album['name']) ?> — PixiCDN</title>
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="stylesheet" href="/assets/app.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen" style="font-family:'Inter',system-ui,sans-serif">
+<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen" style="font-family:'Work Sans',system-ui,sans-serif">
 <header class="bg-white border-b border-[#CBD2D6] h-16">
 <nav class="max-w-[1120px] mx-auto px-6 h-16 flex items-center justify-between">
 <a href="/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
@@ -84,7 +86,7 @@ try {
 </header>
 <main class="max-w-[1120px] mx-auto px-6 py-10">
 <h1 class="font-bold" style="font-size:32px"><?= sanitize($album['name']) ?></h1>
-<p class="text-[#687173] text-sm mb-6"><span class="tnum" style="font-feature-settings:'tnum'"><?= (int) $album['image_count'] ?> gambar</span> · oleh <?= sanitize($username) ?></p>
+<p class="text-[#687173] text-sm mb-6"><span class="tnum"><?= (int) $album['image_count'] ?> gambar</span> · oleh <?= sanitize($username) ?></p>
 <?php if (!$items): ?><p class="text-[#687173]">Album ini kosong.</p><?php else: ?>
 <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
 <?php foreach ($items as $img): ?>

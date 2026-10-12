@@ -69,52 +69,71 @@ try {
 <title>Dashboard — PixiCDN</title>
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="/assets/app.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen" style="font-family:'Inter',system-ui,sans-serif">
-<header class="bg-white border-b border-[#CBD2D6] h-16">
-<nav class="max-w-[1120px] mx-auto px-6 h-16 flex items-center justify-between">
+<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen">
+<div id="sb-backdrop" class="fixed inset-0 bg-black/40 hidden md:hidden z-30"></div>
+<aside id="sb" class="fixed top-0 left-0 h-full w-60 bg-white border-r border-[#CBD2D6] z-40 -translate-x-full md:translate-x-0 transition-transform flex flex-col" aria-label="Menu dashboard">
+<div class="h-16 flex items-center px-6 border-b border-[#CBD2D6]">
 <a href="/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
-<div class="flex gap-2 text-sm font-medium">
-<a href="/upload.php" class="h-12 px-4 leading-[48px] bg-[#003087] text-white font-semibold rounded-lg">Upload</a>
-<a href="/gallery.php" class="hover:text-[#003087] leading-[48px]">Gallery</a>
-<a href="/dashboard/albums.php" class="hover:text-[#003087] leading-[48px]">Album</a>
-<a href="/auth/profile.php" class="hover:text-[#003087] leading-[48px]">Profil</a>
-<a href="/dashboard/api-key.php" class="hover:text-[#003087] leading-[48px]">API key</a>
-<a href="/auth/logout.php" class="hover:text-[#003087] leading-[48px]">Keluar</a>
 </div>
+<nav class="p-4 space-y-1">
+<p class="px-3 pt-2 pb-1 text-xs font-semibold text-[#687173] uppercase tracking-wide">Menu</p>
+<a class="navlink active" href="/dashboard/" aria-current="page"><i data-lucide="layout-dashboard"></i>Dashboard</a>
+<a class="navlink" href="/upload.php"><i data-lucide="upload"></i>Upload</a>
+<a class="navlink" href="/gallery.php"><i data-lucide="image"></i>Gallery</a>
+<a class="navlink" href="/dashboard/albums.php"><i data-lucide="folder"></i>Album</a>
+<p class="px-3 pt-4 pb-1 text-xs font-semibold text-[#687173] uppercase tracking-wide">Akun</p>
+<a class="navlink" href="/auth/profile.php"><i data-lucide="user"></i>Profil</a>
+<a class="navlink" href="/dashboard/api-key.php"><i data-lucide="key"></i>API key</a>
+<a class="navlink" href="/auth/logout.php"><i data-lucide="log-out"></i>Keluar</a>
 </nav>
+</aside>
+<div class="md:ml-60 min-h-screen flex flex-col">
+<header class="md:hidden bg-white border-b border-[#CBD2D6] h-16 flex items-center gap-3 px-4 sticky top-0 z-20">
+<button id="sb-open" class="p-2 rounded-lg hover:bg-[#F5F7FA]" aria-label="Buka menu"><i data-lucide="menu"></i></button>
+<a href="/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
 </header>
-<main class="max-w-[1120px] mx-auto px-6 py-10">
+<main class="max-w-[1120px] w-full mx-auto px-6 py-10">
 <h1 class="font-bold mb-6" style="font-size:32px">Halo, <?= sanitize($user['username']) ?></h1>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<div class="bg-white border border-[#CBD2D6] rounded-xl p-6"><p class="text-[#687173] text-sm">Total gambar</p><p class="tnum font-bold" style="font-size:32px;font-feature-settings:'tnum'"><?= (int) $stats['total'] ?></p></div>
-<div class="bg-white border border-[#CBD2D6] rounded-xl p-6"><p class="text-[#687173] text-sm">Total views</p><p class="tnum font-bold" style="font-size:32px;font-feature-settings:'tnum'"><?= (int) $stats['views'] ?></p></div>
-<div class="bg-white border border-[#CBD2D6] rounded-xl p-6"><p class="text-[#687173] text-sm">Storage</p><p class="tnum font-bold" style="font-size:32px;font-feature-settings:'tnum'"><?= round(((int) $user['storage_used']) / 1048576, 2) ?> / <?= round(((int) $user['storage_quota']) / 1048576) ?> MB</p></div>
+<div class="card"><p class="text-[#687173] text-sm">Total gambar</p><p class="tnum font-bold" style="font-size:32px"><?= (int) $stats['total'] ?></p></div>
+<div class="card"><p class="text-[#687173] text-sm">Total views</p><p class="tnum font-bold" style="font-size:32px"><?= (int) $stats['views'] ?></p></div>
+<div class="card"><p class="text-[#687173] text-sm">Storage</p><p class="tnum font-bold" style="font-size:32px"><?= round(((int) $user['storage_used']) / 1048576, 2) ?> / <?= round(((int) $user['storage_quota']) / 1048576) ?> MB</p></div>
 </div>
-<div class="bg-white border border-[#CBD2D6] rounded-xl p-6 mt-6">
+<div class="card mt-6">
 <h2 class="font-semibold mb-2 text-lg">Upload 7 hari terakhir</h2>
 <canvas id="ch" height="120"></canvas>
 </div>
-<div class="bg-white border border-[#CBD2D6] rounded-xl p-6 mt-6">
+<div class="card mt-6">
 <h2 class="font-semibold mb-2 text-lg">Views 30 hari terakhir</h2>
 <canvas id="chv" height="120"></canvas>
 </div>
-<div class="bg-white border border-[#CBD2D6] rounded-xl p-6 mt-6">
+<div class="card mt-6">
 <h2 class="font-semibold mb-2 text-lg">Top 10 terpopuler</h2>
 <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
 <?php foreach ($top as $t): ?>
 <a href="/image.php?f=<?= sanitize($t['filename']) ?>" class="block">
 <img src="<?= sanitize($t['thumbnail_url'] ?: $t['public_url']) ?>" alt="<?= sanitize($t['filename']) ?>" loading="lazy" class="w-full h-24 object-cover rounded-lg border border-[#CBD2D6]">
-<p class="text-xs text-[#687173] mt-1 tnum" style="font-feature-settings:'tnum'"><?= (int) $t['views'] ?> views</p>
+<p class="text-xs text-[#687173] mt-1 tnum"><?= (int) $t['views'] ?> views</p>
 </a>
 <?php endforeach; ?>
 </div>
 <?php if (!$top): ?><p class="text-[#687173] text-sm">Belum ada gambar.</p><?php endif; ?>
 </div>
 </main>
+</div>
+<script src="https://unpkg.com/lucide@latest"></script>
 <script>
+lucide.createIcons();
+const sb = document.getElementById('sb'), bd = document.getElementById('sb-backdrop');
+function setSb(open) { sb.classList.toggle('-translate-x-full', !open); bd.classList.toggle('hidden', !open); }
+document.getElementById('sb-open').addEventListener('click', () => setSb(true));
+bd.addEventListener('click', () => setSb(false));
+document.querySelectorAll('#sb a').forEach(a => a.addEventListener('click', () => setSb(false)));
 new Chart(document.getElementById('ch'), { type: 'bar',
   data: { labels: <?= json_encode($chart_labels) ?>, datasets: [{ data: <?= json_encode($chart_data) ?>, backgroundColor: 'rgba(0,48,135,0.15)', borderColor: '#003087', borderWidth: 1 }] },
   options: { plugins: { legend: { display: false } } } });

@@ -60,36 +60,38 @@ $pages = max(1, (int) ceil($total / $per));
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gallery — PixiCDN</title>
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="stylesheet" href="/assets/app.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen" style="font-family:'Inter',system-ui,sans-serif">
+<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen" style="font-family:'Work Sans',system-ui,sans-serif">
 <header class="bg-white border-b border-[#CBD2D6] h-16">
 <nav class="max-w-[1120px] mx-auto px-6 h-16 flex items-center justify-between">
 <a href="/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
-<a href="/upload.php" class="h-12 px-6 leading-[48px] bg-[#003087] hover:bg-[#00246B] text-white font-semibold rounded-lg">Upload</a>
+<a href="/upload.php" class="btn btn-primary">Upload</a>
 </nav>
 </header>
 <main class="max-w-[1120px] mx-auto px-6 py-10">
 <h1 class="font-bold mb-6" style="font-size:32px">Gallery</h1>
 <form method="get" class="flex flex-wrap gap-2 mb-6">
-<select name="filter" class="h-12 px-4 bg-white border border-[#CBD2D6] rounded-lg" aria-label="Filter waktu">
+<select name="filter" class="input" style="width:auto" aria-label="Filter waktu">
 <?php foreach (['all' => 'Semua', 'today' => 'Hari ini', 'week' => 'Minggu ini', 'month' => 'Bulan ini'] as $k => $l): ?>
 <option value="<?= $k ?>" <?= $filter === $k ? 'selected' : '' ?>><?= $l ?></option>
 <?php endforeach; ?>
 </select>
-<select name="sort" class="h-12 px-4 bg-white border border-[#CBD2D6] rounded-lg" aria-label="Urutkan">
+<select name="sort" class="input" style="width:auto" aria-label="Urutkan">
 <?php foreach (['newest' => 'Terbaru', 'oldest' => 'Terlama', 'views' => 'Terpopuler'] as $k => $l): ?>
 <option value="<?= $k ?>" <?= $sort === $k ? 'selected' : '' ?>><?= $l ?></option>
 <?php endforeach; ?>
 </select>
-<button class="h-12 px-6 bg-white text-[#003087] font-semibold border-2 border-[#003087] rounded-lg">Terapkan</button>
+<button class="btn btn-secondary">Terapkan</button>
 </form>
 <?php if (!$images): ?>
 <div class="bg-white border border-[#CBD2D6] rounded-xl p-6 text-center py-16">
 <h3 class="text-xl font-semibold mb-2">Belum ada gambar</h3>
 <p class="text-[#687173] mb-6">Upload gambar pertama Anda untuk memulai</p>
-<a href="/upload.php" class="inline-block h-12 px-6 leading-[48px] bg-[#003087] text-white font-semibold rounded-lg">Upload Sekarang</a>
+<a href="/upload.php" class="btn btn-primary">Upload Sekarang</a>
 </div>
 <?php else: ?>
 <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -97,7 +99,7 @@ $pages = max(1, (int) ceil($total / $per));
 <div class="bg-white border border-[#CBD2D6] rounded-xl overflow-hidden">
 <a href="/image.php?f=<?= sanitize($img['filename']) ?>"><img src="<?= sanitize($img['thumbnail_url'] ?: $img['public_url']) ?>" alt="<?= sanitize($img['filename']) ?>" loading="lazy" class="w-full h-40 object-cover"></a>
 <div class="p-4 flex items-center justify-between text-sm text-[#687173]">
-<span class="tnum" style="font-feature-settings:'tnum'"><?= (int) $img['views'] ?> views</span>
+<span class="tnum"><?= (int) $img['views'] ?> views</span>
 <form method="post" action="/delete.php" onsubmit="return confirm('Hapus gambar ini?')">
 <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
 <input type="hidden" name="id" value="<?= (int) $img['id'] ?>">
@@ -109,7 +111,7 @@ $pages = max(1, (int) ceil($total / $per));
 </div>
 <div class="flex flex-wrap gap-2 mt-6">
 <?php for ($p = 1; $p <= $pages; $p++): ?>
-<a href="?filter=<?= sanitize($filter) ?>&sort=<?= sanitize($sort) ?>&page=<?= $p ?>" class="h-12 px-4 leading-[48px] rounded-lg font-medium <?= $p === $page ? 'bg-[#003087] text-white' : 'bg-white border border-[#CBD2D6]' ?>"><?= $p ?></a>
+<a href="?filter=<?= sanitize($filter) ?>&sort=<?= sanitize($sort) ?>&page=<?= $p ?>" class="btn-page<?= $p === $page ? ' active' : '' ?>"<?= $p === $page ? ' aria-current="page"' : '' ?>><?= $p ?></a>
 <?php endfor; ?>
 </div>
 <?php endif; ?>

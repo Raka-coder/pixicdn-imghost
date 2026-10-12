@@ -59,10 +59,12 @@ $url = (string) $img['public_url'];
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= htmlspecialchars($filename, ENT_QUOTES, 'UTF-8') ?> — PixiCDN</title>
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="stylesheet" href="/assets/app.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen" style="font-family:'Inter',system-ui,sans-serif">
+<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen" style="font-family:'Work Sans',system-ui,sans-serif">
 <header class="bg-white border-b border-[#CBD2D6] h-16">
 <nav class="max-w-[1120px] mx-auto px-6 h-16 flex items-center justify-between">
 <a href="/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
@@ -72,11 +74,11 @@ $url = (string) $img['public_url'];
 <main class="max-w-3xl mx-auto px-6 py-10 text-center">
 <div class="bg-white border border-[#CBD2D6] rounded-xl p-6">
 <img src="<?= htmlspecialchars($url, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($filename, ENT_QUOTES, 'UTF-8') ?>" class="w-full rounded-lg mb-4 border border-[#CBD2D6]">
-<p class="text-[#687173] mb-4"><span class="tnum" style="font-feature-settings:'tnum'"><?= (int) $img['views'] ?> views</span> · <?= htmlspecialchars((string) ($img['original_name'] ?? $filename), ENT_QUOTES, 'UTF-8') ?></p>
+<p class="text-[#687173] mb-4"><span class="tnum"><?= (int) $img['views'] ?> views</span> · <?= htmlspecialchars((string) ($img['original_name'] ?? $filename), ENT_QUOTES, 'UTF-8') ?></p>
 <div class="grid gap-3 text-left">
 <?php foreach (['Direct' => $url, 'BBCode' => '[img]' . $url . '[/img]', 'HTML' => '<img src="' . $url . '">'] as $label => $val): ?>
 <label class="text-sm text-[#687173] font-medium"><?= $label ?>
-<input readonly value="<?= htmlspecialchars($val, ENT_QUOTES, 'UTF-8') ?>" onclick="this.select();navigator.clipboard.writeText(this.value)" class="w-full mt-1 h-12 px-4 bg-white border border-[#CBD2D6] rounded-lg text-xs" style="font-family:'JetBrains Mono',monospace"></label>
+<input readonly value="<?= htmlspecialchars($val, ENT_QUOTES, 'UTF-8') ?>" onclick="this.select();navigator.clipboard.writeText(this.value)" class="mono w-full mt-1 h-12 px-4 bg-white border border-[#CBD2D6] rounded-lg text-xs"></label>
 <?php endforeach; ?>
 </div>
 </div>
