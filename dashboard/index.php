@@ -20,6 +20,9 @@ require_once dirname(__DIR__) . '/includes/auth.php';
 
 require_login();
 $user = current_user();
+$active = 'dashboard';
+$crumbs = [['label' => 'Dashboard']];
+$back_url = null;
 $stats = ['total' => 0, 'views' => 0];
 $chart_labels = [];
 $chart_data = [];
@@ -75,33 +78,10 @@ try {
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen">
-<div id="sb-backdrop" class="fixed inset-0 bg-black/40 hidden md:hidden z-30"></div>
-<aside id="sb" class="fixed top-0 left-0 h-full w-60 bg-white border-r border-[#CBD2D6] z-40 -translate-x-full md:translate-x-0 transition-transform flex flex-col" aria-label="Menu dashboard">
-<div class="h-16 flex items-center px-6 border-b border-[#CBD2D6]">
-<a href="/dashboard/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
-</div>
-<nav class="p-4 space-y-1">
-<p class="px-3 pt-2 pb-1 text-xs font-semibold text-[#687173] uppercase tracking-wide">Menu</p>
-<a class="navlink active" href="/dashboard/" aria-current="page"><i data-lucide="layout-dashboard"></i>Dashboard</a>
-<a class="navlink" href="/upload.php"><i data-lucide="upload"></i>Upload</a>
-<a class="navlink" href="/gallery.php"><i data-lucide="image"></i>Gallery</a>
-<a class="navlink" href="/dashboard/albums.php"><i data-lucide="folder"></i>Album</a>
-<p class="px-3 pt-4 pb-1 text-xs font-semibold text-[#687173] uppercase tracking-wide">Akun</p>
-<a class="navlink" href="/auth/profile.php"><i data-lucide="user"></i>Profil</a>
-<a class="navlink" href="/dashboard/api-key.php"><i data-lucide="key"></i>API key</a>
-<a class="navlink" href="/auth/logout.php"><i data-lucide="log-out"></i>Keluar</a>
-</nav>
-</aside>
-<div class="md:ml-60 min-h-screen flex flex-col">
-<header class="md:hidden bg-white border-b border-[#CBD2D6] h-16 flex items-center gap-3 px-4 sticky top-0 z-20">
-<button id="sb-open" class="p-2 rounded-lg hover:bg-[#F5F7FA]" aria-label="Buka menu"><i data-lucide="menu"></i></button>
-<a href="/dashboard/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
-</header>
+<?php require dirname(__DIR__) . '/includes/sidebar.php'; ?>
 <main class="max-w-[1120px] w-full mx-auto px-6 py-10">
-<nav class="flex items-center gap-1 text-sm text-[#687173] mb-4" aria-label="Breadcrumb">
-<span class="font-medium text-[#1A1A2E]" aria-current="page">Dashboard</span>
-</nav>
-<h1 class="font-bold mb-6" style="font-size:32px">Halo, <?= sanitize($user['username']) ?></h1>
+<?php require dirname(__DIR__) . '/includes/breadcrumbs.php'; ?>
+<h1 class="page-title mb-6">Halo, <?= sanitize($user['username']) ?></h1>
 <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6" aria-label="Aksi cepat">
 <a href="/upload.php" class="card flex items-center gap-3">
 <span class="p-2 rounded-lg bg-[#EAF0FA] text-[#003087]"><i data-lucide="upload" class="w-5 h-5"></i></span>
@@ -155,11 +135,6 @@ try {
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
 lucide.createIcons();
-const sb = document.getElementById('sb'), bd = document.getElementById('sb-backdrop');
-function setSb(open) { sb.classList.toggle('-translate-x-full', !open); bd.classList.toggle('hidden', !open); }
-document.getElementById('sb-open').addEventListener('click', () => setSb(true));
-bd.addEventListener('click', () => setSb(false));
-document.querySelectorAll('#sb a').forEach(a => a.addEventListener('click', () => setSb(false)));
 new Chart(document.getElementById('ch'), { type: 'bar',
   data: { labels: <?= json_encode($chart_labels) ?>, datasets: [{ data: <?= json_encode($chart_data) ?>, backgroundColor: 'rgba(0,48,135,0.15)', borderColor: '#003087', borderWidth: 1 }] },
   options: { plugins: { legend: { display: false } } } });

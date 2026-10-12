@@ -20,6 +20,9 @@ require_once __DIR__ . '/includes/auth.php';
 require_login(); // Wajib akun — tamu diarahkan ke login
 start_secure_session();
 $token = csrfToken();
+$active = 'upload';
+$crumbs = [['label' => 'Dashboard', 'url' => '/dashboard/'], ['label' => 'Upload']];
+$back_url = '/dashboard/';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -33,18 +36,11 @@ $token = csrfToken();
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen" style="font-family:'Work Sans',system-ui,sans-serif">
-<header class="bg-white border-b border-[#CBD2D6] h-16">
-<nav class="max-w-[1120px] mx-auto px-6 h-16 flex items-center justify-between">
-<a href="/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
-<div class="flex items-center gap-3 text-[15px] font-medium">
-<a href="/gallery.php" class="hover:text-[#003087] hover:underline hover:underline-offset-4">Gallery</a>
-<a href="/dashboard/" class="hover:text-[#003087] hover:underline hover:underline-offset-4">Dashboard</a>
-</div>
-</nav>
-</header>
-<main class="max-w-3xl mx-auto px-6 py-10">
-<h1 class="font-bold" style="font-size:32px">Upload Gambar</h1>
+<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen">
+<?php require __DIR__ . '/includes/sidebar.php'; ?>
+<main class="max-w-3xl w-full mx-auto px-6 py-10">
+<?php require __DIR__ . '/includes/breadcrumbs.php'; ?>
+<h1 class="page-title mb-1">Upload Gambar</h1>
 <p class="text-[#687173] mb-6">JPG, PNG, GIF, WebP · maks 5 MB/file · maks 5 file</p>
 <div id="drop" class="border-2 border-dashed border-[#CBD2D6] bg-white rounded-2xl p-10 text-center cursor-pointer hover:border-[#003087]">
 <p class="mb-2 font-medium">Tarik &amp; letakkan gambar di sini, atau klik untuk pilih</p>
@@ -54,7 +50,7 @@ $token = csrfToken();
 <div class="h-2 bg-white border border-[#CBD2D6] rounded mt-4 overflow-hidden"><div id="bar" class="h-full w-0 bg-[#003087]"></div></div>
 <button id="go" class="btn btn-primary mt-4 w-full">Upload</button>
 <label class="block text-sm text-[#687173] mt-3">Hapus otomatis
-<select id="exp" class="input ml-2" style="width:auto;display:inline-block">
+<select id="exp" class="input input-auto ml-2 inline-block">
 <option value="never">Tidak pernah</option>
 <option value="1h">1 jam</option>
 <option value="1d">1 hari</option>
@@ -64,8 +60,16 @@ $token = csrfToken();
 <div id="result" class="mt-6 space-y-3"></div>
 <p class="mt-6"><a href="/gallery.php" class="text-[#003087] font-medium underline">Lihat gallery</a></p>
 </main>
+</div>
+<footer class="md:ml-60 border-t border-[#CBD2D6] bg-white">
+<div class="max-w-3xl mx-auto px-6 py-4 text-sm text-[#687173]">
+<a href="/" class="hover:text-[#003087] font-medium">Halaman Utama</a>
+</div>
+</footer>
+<script src="https://unpkg.com/lucide@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script>
+lucide.createIcons();
 const drop = document.getElementById('drop'), input = document.getElementById('files'),
       prev = document.getElementById('preview'), bar = document.getElementById('bar'),
       go = document.getElementById('go'), result = document.getElementById('result');

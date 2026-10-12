@@ -51,6 +51,9 @@ $stmt->execute([(int) $user['id']]);
 $row = $stmt->fetch();
 $has_key = !empty($row['api_key']);
 $masked = $has_key ? '••••••••' . substr((string) $row['api_key'], -6) : '';
+$active = 'api-key';
+$crumbs = [['label' => 'Dashboard', 'url' => '/dashboard/'], ['label' => 'API key']];
+$back_url = null;
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -64,38 +67,10 @@ $masked = $has_key ? '••••••••' . substr((string) $row['api_key'
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen">
-<div id="sb-backdrop" class="fixed inset-0 bg-black/40 hidden md:hidden z-30"></div>
-<aside id="sb" class="fixed top-0 left-0 h-full w-60 bg-white border-r border-[#CBD2D6] z-40 -translate-x-full md:translate-x-0 transition-transform flex flex-col" aria-label="Menu dashboard">
-<div class="h-16 flex items-center px-6 border-b border-[#CBD2D6]">
-<a href="/dashboard/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
-</div>
-<nav class="p-4 space-y-1">
-<p class="px-3 pt-2 pb-1 text-xs font-semibold text-[#687173] uppercase tracking-wide">Menu</p>
-<a class="navlink" href="/dashboard/"><i data-lucide="layout-dashboard"></i>Dashboard</a>
-<a class="navlink" href="/upload.php"><i data-lucide="upload"></i>Upload</a>
-<a class="navlink" href="/gallery.php"><i data-lucide="image"></i>Gallery</a>
-<a class="navlink" href="/dashboard/albums.php"><i data-lucide="folder"></i>Album</a>
-<p class="px-3 pt-4 pb-1 text-xs font-semibold text-[#687173] uppercase tracking-wide">Akun</p>
-<a class="navlink" href="/auth/profile.php"><i data-lucide="user"></i>Profil</a>
-<a class="navlink active" href="/dashboard/api-key.php" aria-current="page"><i data-lucide="key"></i>API key</a>
-<a class="navlink" href="/auth/logout.php"><i data-lucide="log-out"></i>Keluar</a>
-</nav>
-</aside>
-<div class="md:ml-60 min-h-screen flex flex-col">
-<header class="md:hidden bg-white border-b border-[#CBD2D6] h-16 flex items-center gap-3 px-4 sticky top-0 z-20">
-<button id="sb-open" class="p-2 rounded-lg hover:bg-[#F5F7FA]" aria-label="Buka menu"><i data-lucide="menu"></i></button>
-<a href="/dashboard/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
-</header>
+<?php require dirname(__DIR__) . '/includes/sidebar.php'; ?>
 <main class="max-w-2xl w-full mx-auto px-6 py-10">
-<nav class="flex items-center gap-1 text-sm text-[#687173] mb-4" aria-label="Breadcrumb">
-<a href="/dashboard/" class="hover:text-[#003087]">Dashboard</a>
-<i data-lucide="chevron-right" class="w-4 h-4"></i>
-<span class="font-medium text-[#1A1A2E]" aria-current="page">API key</span>
-</nav>
-<div class="flex items-center gap-3 mb-4">
-<a href="/dashboard/" class="btn btn-secondary btn-sm">← Kembali</a>
-<h1 class="font-bold" style="font-size:32px">API Key</h1>
-</div>
+<?php require dirname(__DIR__) . '/includes/breadcrumbs.php'; ?>
+<h1 class="page-title mb-4">API Key</h1>
 <p class="text-[#687173] text-sm mb-4">Pakai di header <code class="mono bg-white border border-[#CBD2D6] rounded px-2 py-1">X-API-Key</code>. Key hanya ditampilkan sekali setelah generate.</p>
 <?php if ($plain !== ''): ?>
 <div class="bg-[#FFF8E1] border border-[#F5BA2E] rounded-lg p-4 mb-4">
@@ -130,11 +105,6 @@ $masked = $has_key ? '••••••••' . substr((string) $row['api_key'
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
 lucide.createIcons();
-const sb = document.getElementById('sb'), bd = document.getElementById('sb-backdrop');
-function setSb(open) { sb.classList.toggle('-translate-x-full', !open); bd.classList.toggle('hidden', !open); }
-document.getElementById('sb-open').addEventListener('click', () => setSb(true));
-bd.addEventListener('click', () => setSb(false));
-document.querySelectorAll('#sb a').forEach(a => a.addEventListener('click', () => setSb(false)));
 </script>
 </body>
 </html>

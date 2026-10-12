@@ -170,6 +170,24 @@ a.card:hover {
     padding-right: 15px;
 }
 
+/* ---- Select/pill input: lebar ikut isi (lawan .input width:100%) ---- */
+.input-auto {
+    width: auto;
+}
+
+/* ---- Judul halaman (menggantikan inline style font-size:32px) ---- */
+.page-title {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+@media (max-width: 640px) {
+    .page-title {
+        font-size: 24px;
+    }
+}
+
 /* ---- Pagination angka halaman ---- */
 .btn-page {
     display: inline-flex;
@@ -206,6 +224,7 @@ a.card:hover {
     font-weight: 500;
     font-size: 15px;
     color: #1A1A2E;
+    transition: all 200ms ease;
 }
 
 .navlink:hover {

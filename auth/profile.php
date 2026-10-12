@@ -22,6 +22,9 @@ require_login();
 $user = current_user();
 $msg = '';
 $err = '';
+$active = 'profile';
+$crumbs = [['label' => 'Dashboard', 'url' => '/dashboard/'], ['label' => 'Profil']];
+$back_url = '/dashboard/';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrf($_POST['csrf_token'] ?? '')) {
@@ -79,15 +82,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen" style="font-family:'Work Sans',system-ui,sans-serif">
-<header class="bg-white border-b border-[#CBD2D6] h-16">
-<nav class="max-w-[1120px] mx-auto px-6 h-16 flex items-center justify-between">
-<a href="/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
-<a href="/dashboard/" class="hover:text-[#003087] font-medium">Dashboard</a>
-</nav>
-</header>
-<main class="max-w-2xl mx-auto px-6 py-10">
-<h1 class="font-bold mb-4" style="font-size:32px">Profil</h1>
+<body class="bg-[#F5F7FA] text-[#1A1A2E] min-h-screen">
+<?php require dirname(__DIR__) . '/includes/sidebar.php'; ?>
+<main class="max-w-2xl w-full mx-auto px-6 py-10">
+<?php require dirname(__DIR__) . '/includes/breadcrumbs.php'; ?>
+<h1 class="page-title mb-4">Profil</h1>
 <div class="bg-white border border-[#CBD2D6] rounded-xl p-6 mb-4 text-sm">
 <p>Username: <b><?= sanitize($user['username']) ?></b></p>
 <p class="text-[#687173]">Bergabung: <?= sanitize((string) $user['created_at']) ?></p>
@@ -109,7 +108,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <label class="block text-sm font-medium">Konfirmasi<input type="password" name="confirm" required class="input mt-1"></label>
 <button class="btn btn-primary">Ubah password</button>
 </form>
-<p class="mt-4 text-sm"><a href="/dashboard/" class="text-[#003087] underline">Dashboard</a> · <a href="/dashboard/api-key.php" class="text-[#003087] underline">API key</a></p>
 </main>
+</div>
+<footer class="md:ml-60 border-t border-[#CBD2D6] bg-white">
+<div class="max-w-2xl mx-auto px-6 py-4 text-sm text-[#687173]">
+<a href="/" class="hover:text-[#003087] font-medium">Halaman Utama</a>
+</div>
+</footer>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+lucide.createIcons();
+</script>
 </body>
 </html>

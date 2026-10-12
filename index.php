@@ -51,14 +51,14 @@ try {
 <nav class="max-w-[1120px] mx-auto px-6 h-16 flex items-center justify-between" aria-label="Navigasi utama">
 <a href="/" class="text-xl font-bold text-[#003087]">PixiCDN</a>
 <div class="hidden md:flex items-center gap-8 text-[15px] font-medium">
-<a href="#fitur" class="hover:text-[#003087] hover:underline hover:decoration-2 hover:underline-offset-4">Fitur</a>
-<a href="#cara" class="hover:text-[#003087] hover:decoration-2 hover:underline hover:underline-offset-4">Cara kerja</a>
-<a href="#api" class="hover:text-[#003087] hover:decoration-2 hover:underline hover:underline-offset-4">API</a>
-<a href="/gallery.php" class="hover:text-[#003087] hover:decoration-2 hover:underline hover:underline-offset-4">Gallery</a>
+<a href="#fitur" class="flex items-center h-9 hover:text-[#003087] hover:underline hover:decoration-2 hover:underline-offset-4 transition-all duration-200">Fitur</a>
+<a href="#cara" class="flex items-center h-9 hover:text-[#003087] hover:decoration-2 hover:underline hover:underline-offset-4 transition-all duration-200">Cara kerja</a>
+<a href="#api" class="flex items-center h-9 hover:text-[#003087] hover:decoration-2 hover:underline hover:underline-offset-4 transition-all duration-200">API</a>
+<a href="/gallery.php" class="flex items-center h-9 hover:text-[#003087] hover:decoration-2 hover:underline hover:underline-offset-4 transition-all duration-200">Gallery</a>
 </div>
 <div class="flex items-center gap-3">
-<a href="/auth/login.php" class="btn btn-secondary hidden sm:inline-flex">Masuk</a>
-<a href="/auth/register.php" class="btn btn-primary">Upload gratis</a>
+<a href="/auth/login.php" class="btn btn-secondary btn-sm hidden sm:inline-flex transition-all duration-200">Masuk</a>
+<a href="/auth/register.php" class="btn btn-primary btn-sm transition-all duration-200">Upload gratis</a>
 </div>
 </nav>
 </header>
