@@ -67,8 +67,11 @@ $is_auth_page = true;
 require dirname(__DIR__) . '/includes/header.php';
 ?>
 
-<main class="flex-grow-1 d-flex align-items-center justify-center py-5 px-3">
+<main class="flex-grow-1 d-flex align-items-center justify-content-center py-5 px-3">
     <div class="w-100 auth-card">
+        <div class="text-center mb-4">
+            <a href="/" class="fw-bold fs-4 text-primary text-decoration-none"><i class="bi bi-images me-1"></i>PixiCDN</a>
+        </div>
         <div class="card border-0 shadow-sm">
             <div class="card-body p-4 p-md-5">
                 <h1 class="fw-semibold mb-4 text-center auth-title">Daftar akun gratis</h1>
@@ -131,6 +134,9 @@ require dirname(__DIR__) . '/includes/header.php';
                 <?php endif; ?>
             </div>
         </div>
+        <p class="text-center mt-4 mb-0">
+            <a href="/" class="text-secondary text-decoration-none small">← Kembali ke Beranda</a>
+        </p>
     </div>
 </main>
 

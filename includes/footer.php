@@ -29,15 +29,6 @@ $is_public_page = $is_public_page ?? false;
 </footer>
 <?php endif; ?>
 
-<?php if ($is_auth_page): ?>
-<!-- Footer Auth Pages -->
-<footer class="bg-white border-top border-2 border-primary mt-auto">
-    <div class="container py-3 text-center">
-        <a href="/" class="text-secondary text-decoration-none small">← Kembali ke Beranda</a>
-    </div>
-</footer>
-<?php endif; ?>
-
 <?php if ($is_public_page): ?>
 <!-- Footer Public Pages -->
 <footer class="bg-white border-top border-2 border-primary mt-auto">
@@ -111,8 +102,14 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Copy to clipboard with tooltip feedback
+    // Copy to clipboard with tooltip feedback (klik + keyboard Enter/Space)
     document.querySelectorAll('[data-copy-target]').forEach(btn => {
+        btn.addEventListener('keydown', function (e) {
+            if ((e.key === 'Enter' || e.key === ' ') && this.tagName !== 'BUTTON') {
+                e.preventDefault();
+                this.click();
+            }
+        });
         btn.addEventListener('click', async function () {
             const targetId = this.dataset.copyTarget;
             const target = document.getElementById(targetId);

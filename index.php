@@ -34,7 +34,7 @@ require __DIR__ . '/includes/header.php';
 <main class="flex-grow-1">
     <!-- Navbar Desktop -->
     <header class="bg-white border-bottom border-2 border-primary d-none d-md-block sticky-top">
-        <nav class="container-fluid px-4 py-2 d-flex align-items-center justify-content-between" aria-label="Navigasi utama">
+        <nav class="container py-2 d-flex align-items-center justify-content-between" aria-label="Navigasi utama">
             <a href="/" class="fw-bold fs-4 text-primary text-decoration-none"><i class="bi bi-images me-1"></i>PixiCDN</a>
             <div class="d-flex align-items-center gap-4">
                 <a href="#fitur" class="text-secondary text-decoration-none fw-medium small nav-landing">Fitur</a>
@@ -50,7 +50,7 @@ require __DIR__ . '/includes/header.php';
     </header>
 
     <!-- Hero Section -->
-    <section class="container py-5 md:py-7">
+    <section class="container py-5">
         <div class="row align-items-center g-5">
             <div class="col-lg-6">
                 <span class="badge bg-success-subtle text-success fw-medium px-3 py-2 mb-3">Gratis · Tanpa iklan · Wajib daftar</span>
@@ -67,13 +67,13 @@ require __DIR__ . '/includes/header.php';
                     <h3 class="fw-semibold mb-1">Setelah upload, Anda dapat</h3>
                     <p class="text-secondary small mb-4">Tiga format siap salin untuk setiap gambar.</p>
                     <div class="d-grid gap-3 mono small">
-                        <div class="bg-body-tertiary border rounded-3 p-3 text-break" data-copy-target="linkDirect" data-bs-toggle="tooltip" data-bs-title="Klik untuk salin">
+                        <div class="bg-body-tertiary border rounded-3 p-3 text-break copy-box" role="button" tabindex="0" data-copy-target="linkDirect" data-bs-toggle="tooltip" data-bs-title="Klik untuk salin">
                             https://pixicdn.erdtreeproject.my.id/abc123.jpg
                         </div>
-                        <div class="bg-body-tertiary border rounded-3 p-3 text-break" data-copy-target="linkBBCode" data-bs-toggle="tooltip" data-bs-title="Klik untuk salin">
+                        <div class="bg-body-tertiary border rounded-3 p-3 text-break copy-box" role="button" tabindex="0" data-copy-target="linkBBCode" data-bs-toggle="tooltip" data-bs-title="Klik untuk salin">
                             [img]https://pixicdn.erdtreeproject.my.id/abc123.jpg[/img]
                         </div>
-                        <div class="bg-body-tertiary border rounded-3 p-3 text-break" data-copy-target="linkHTML" data-bs-toggle="tooltip" data-bs-title="Klik untuk salin">
+                        <div class="bg-body-tertiary border rounded-3 p-3 text-break copy-box" role="button" tabindex="0" data-copy-target="linkHTML" data-bs-toggle="tooltip" data-bs-title="Klik untuk salin">
                             &lt;img src="https://pixicdn.erdtreeproject.my.id/abc123.jpg"&gt;
                         </div>
                     </div>
@@ -221,7 +221,7 @@ require __DIR__ . '/includes/header.php';
             <div class="col-md-4">
                 <div class="card card-trust p-4 h-100">
                     <p class="d-flex align-items-center gap-2 fw-semibold mb-2">
-                        <span class="badge rounded-pill bg-success fs-6 px-3 py-2"><i class="bi bi-chat-square-text me-1"></i>Forum & Komunitas</span>
+                        <span class="badge rounded-pill bg-success px-3 py-2"><i class="bi bi-chat-square-text me-1"></i>Forum & Komunitas</span>
                     </p>
                     <p class="text-secondary small mb-0">Screenshot bukti dan diskusi dengan BBCode siap tempel.</p>
                 </div>
@@ -229,7 +229,7 @@ require __DIR__ . '/includes/header.php';
             <div class="col-md-4">
                 <div class="card card-trust p-4 h-100">
                     <p class="d-flex align-items-center gap-2 fw-semibold mb-2">
-                        <span class="badge rounded-pill bg-warning text-dark fs-6 px-3 py-2"><i class="bi bi-pencil-square me-1"></i>Blogger & Kreator</span>
+                        <span class="badge rounded-pill bg-warning text-dark px-3 py-2"><i class="bi bi-pencil-square me-1"></i>Blogger & Kreator</span>
                     </p>
                     <p class="text-secondary small mb-0">Galeri ringan untuk ilustrasi artikel tanpa plugin berat.</p>
                 </div>
@@ -237,7 +237,7 @@ require __DIR__ . '/includes/header.php';
             <div class="col-md-4">
                 <div class="card card-trust p-4 h-100">
                     <p class="d-flex align-items-center gap-2 fw-semibold mb-2">
-                        <span class="badge rounded-pill bg-info fs-6 px-3 py-2"><i class="bi bi-code me-1"></i>Developer</span>
+                        <span class="badge rounded-pill bg-info px-3 py-2"><i class="bi bi-code me-1"></i>Developer</span>
                     </p>
                     <p class="text-secondary small mb-0">API key + endpoint JSON untuk pipeline upload otomatis.</p>
                 </div>
@@ -259,10 +259,10 @@ require __DIR__ . '/includes/header.php';
 
     <!-- CTA Final -->
     <section class="container mb-5">
-        <div class="bg-primary rounded-4 p-5 p-md-6 text-center text-white">
+        <div class="bg-primary rounded-4 p-4 p-md-5 text-center text-white">
             <h2 class="fw-bold section-title">Mulai hosting gambar Anda hari ini</h2>
             <p class="mt-2 text-white text-opacity-75">Gratis, tanpa kartu kredit, tanpa iklan.</p>
-            <div class="mt-4 d-flex flex-wrap justify-center gap-3">
+            <div class="mt-4 d-flex flex-wrap justify-content-center gap-3">
                 <a href="/auth/register.php" class="btn btn-gold btn-lg px-4">Upload pertama</a>
                 <a href="/gallery.php" class="btn btn-outline-light btn-lg px-4">Lihat gallery</a>
             </div>

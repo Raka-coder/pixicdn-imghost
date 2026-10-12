@@ -191,6 +191,9 @@ aside .nav-link:not(.active):hover,
 /* Nav spacer (mobile topbar balance) */
 .nav-spacer { width: 42px; flex-shrink: 0; }
 
+/* Click-to-copy boxes */
+.copy-box { cursor: pointer; }
+
 /* Transition for all interactive elements */
 a, button, .btn, .form-control, .form-select, .nav-link, .card-trust {
     transition: all 0.2s ease;
@@ -231,15 +234,6 @@ a, button, .btn, .form-control, .form-select, .nav-link, .card-trust {
         </button>
         <a href="/dashboard/" class="fw-bold fs-5 text-primary text-decoration-none"><i class="bi bi-images me-1"></i>PixiCDN</a>
         <div class="nav-spacer"></div>
-    </div>
-</header>
-<?php endif; ?>
-
-<?php if ($is_auth_page): ?>
-<!-- Auth Pages: Minimal Header -->
-<header class="bg-white border-bottom border-2 border-primary py-3">
-    <div class="container text-center">
-        <a href="/" class="fw-bold fs-4 text-primary text-decoration-none"><i class="bi bi-images me-1"></i>PixiCDN</a>
     </div>
 </header>
 <?php endif; ?>
