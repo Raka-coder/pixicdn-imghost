@@ -37,25 +37,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$allowed) {
             $error = 'Terlalu banyak percobaan daftar. Coba lagi nanti.';
         } else {
-        $username = trim($_POST['username'] ?? '');
-        $password = $_POST['password'] ?? '';
-        $confirm = $_POST['confirm'] ?? '';
-        if ($password !== $confirm) {
-            $error = 'Konfirmasi password tidak sama.';
-        } else {
-            try {
-                $result = register_user($username, $password);
-                mark_login($result['user_id']);
-                $_SESSION['just_registered_code'] = $result['recovery_code'];
-                header('Location: /auth/register.php?done=1');
-                exit;
-            } catch (RuntimeException $e) {
-                $error = $e->getMessage();
-            } catch (PDOException $e) {
-                error_log('Register gagal: ' . $e->getMessage());
-                $error = 'Terjadi kesalahan pada sistem. Silakan coba lagi.';
+            $username = trim($_POST['username'] ?? '');
+            $password = $_POST['password'] ?? '';
+            $confirm = $_POST['confirm'] ?? '';
+            if ($password !== $confirm) {
+                $error = 'Konfirmasi password tidak sama.';
+            } else {
+                try {
+                    $result = register_user($username, $password);
+                    mark_login($result['user_id']);
+                    $_SESSION['just_registered_code'] = $result['recovery_code'];
+                    header('Location: /auth/register.php?done=1');
+                    exit;
+                } catch (RuntimeException $e) {
+                    $error = $e->getMessage();
+                } catch (PDOException $e) {
+                    error_log('Register gagal: ' . $e->getMessage());
+                    $error = 'Terjadi kesalahan pada sistem. Silakan coba lagi.';
+                }
             }
-        }
         }
     }
 }

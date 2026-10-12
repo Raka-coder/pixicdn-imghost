@@ -26,3 +26,7 @@ skills-lock.json
 *.bak
 *.backup
 *.old
+
+# PHP CS Fixer configuration
+/.php-cs-fixer.cache
+/.php-cs-fixer.php
