@@ -3,7 +3,6 @@
 [![Build](https://github.com/Raka-coder/pixicdn-imghost/actions/workflows/php.yml/badge.svg)](https://github.com/Raka-coder/pixicdn-imghost/actions)
 ![PHP](https://img.shields.io/badge/PHP-8.2-blue)
 ![MariaDB](https://img.shields.io/badge/MariaDB-11-orange)
-![License](https://img.shields.io/badge/License-MIT-green)
 
 Self-hosted image hosting with permanent direct links. Upload images, get embeddable URLs for forums and blogs, manage them from a dashboard, or integrate via REST API. No ads, no tracking, your data stays on your server.
 
