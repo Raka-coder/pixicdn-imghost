@@ -26,6 +26,12 @@ $login = is_file(dirname(__DIR__) . '/auth/login.php') ? file_get_contents(dirna
 check('login rate-limit wiring', str_contains($login, 'check_rate_limit') && str_contains($login, 'Terlalu banyak percobaan'));
 check('login tidak bocor enumerasi', !str_contains(strtolower($login), 'username tidak terdaftar'));
 
+$auth = is_file(dirname(__DIR__) . '/includes/auth.php') ? file_get_contents(dirname(__DIR__) . '/includes/auth.php') : '';
+check('auth punya dummy hash timing', str_contains($auth, 'DUMMY_PASSWORD_HASH'));
+check('verify_login samakan waktu user-asing', str_contains($auth, 'password_verify($password, DUMMY_PASSWORD_HASH)'));
+check('reset samakan waktu user-asing', str_contains($auth, 'password_verify($recovery_code, DUMMY_PASSWORD_HASH)'));
+check('login regenerate session', str_contains($auth, 'session_regenerate_id(true)'));
+
 $album = is_file(dirname(__DIR__) . '/album.php') ? file_get_contents(dirname(__DIR__) . '/album.php') : '';
 check('album publik ada', $album !== '');
 check('album pakai allow_public', str_contains($album, 'allow_public'));

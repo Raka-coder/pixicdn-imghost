@@ -165,6 +165,17 @@ aside .nav-link:not(.active):hover,
 .section-title { font-size: 2rem; }
 .auth-title { font-size: 1.5rem; }
 
+/* Ritme vertikal landing: antar-section lega */
+.section-gap { margin-bottom: 5rem; }
+@media (max-width: 576px) { .section-gap { margin-bottom: 3rem; } }
+
+/* Radius tombol seragam 8px di semua ukuran */
+.btn, .btn-sm, .btn-lg { --bs-btn-border-radius: 0.5rem; }
+
+/* Ikon landing proporsional konteks (lebih kecil dari dashboard) */
+.icon-box-sm { width: 40px; height: 40px; flex-shrink: 0; }
+.icon-num-sm { width: 56px; height: 56px; flex-shrink: 0; }
+
 /* Desktop sidebar shell */
 .sidebar-desktop { height: 100vh; z-index: 100; }
 

@@ -14,6 +14,14 @@ require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/helpers.php';
 
 /**
+ * Dummy bcrypt hash (cost 12) untuk menyamakan waktu respons saat user
+ * tidak ditemukan. Mencegah enumerasi username via timing attack:
+ * password_verify butuh ~250ms, tanpa ini request user-asing instan.
+ * Hash ini tidak pernah cocok dengan password apapun.
+ */
+const DUMMY_PASSWORD_HASH = '$2y$12$M1e0ryjbnPAhso4ggnNS5Od9qD/Vz7qfAj9leJ0sbpywWgmpru0mC';
+
+/**
  * Validasi username: 3-30 karakter, huruf/angka/underscore.
  *
  * @param string $username Username
@@ -121,7 +129,12 @@ function verify_login(string $username, string $password): ?array
     $stmt = getDB()->prepare('SELECT * FROM users WHERE username = ? AND is_active = TRUE');
     $stmt->execute([$username]);
     $user = $stmt->fetch();
-    if (!$user || !password_verify($password, $user['password_hash'])) {
+    if (!$user) {
+        // Samakan waktu dengan jalur password salah (anti timing-enumeration)
+        password_verify($password, DUMMY_PASSWORD_HASH);
+        return null;
+    }
+    if (!password_verify($password, $user['password_hash'])) {
         return null;
     }
     return $user;
@@ -156,7 +169,12 @@ function request_password_reset(string $username, string $recovery_code, string 
     $stmt = getDB()->prepare('SELECT id, recovery_code_hash FROM users WHERE username = ? AND is_active = TRUE');
     $stmt->execute([$username]);
     $user = $stmt->fetch();
-    if (!$user || empty($user['recovery_code_hash']) || !password_verify($recovery_code, $user['recovery_code_hash'])) {
+    if (!$user || empty($user['recovery_code_hash'])) {
+        // Samakan waktu dengan jalur code salah (anti timing-enumeration)
+        password_verify($recovery_code, DUMMY_PASSWORD_HASH);
+        return false;
+    }
+    if (!password_verify($recovery_code, $user['recovery_code_hash'])) {
         return false;
     }
     $token = bin2hex(random_bytes(32));

@@ -88,7 +88,7 @@ require __DIR__ . '/includes/header.php';
 
     <!-- Trust Stats -->
     <?php if ($stats !== null): ?>
-    <section class="container mb-5" aria-label="Statistik layanan">
+    <section class="container section-gap" aria-label="Statistik layanan">
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="card card-trust text-center p-4 h-100">
@@ -113,7 +113,7 @@ require __DIR__ . '/includes/header.php';
     <?php endif; ?>
 
     <!-- Features -->
-    <section id="fitur" class="container mb-5">
+    <section id="fitur" class="container section-gap">
         <div class="text-center mb-5">
             <h2 class="fw-semibold section-title">Semua yang Anda butuhkan, tanpa yang tidak</h2>
             <p class="text-secondary mt-2">Fokus pada hosting gambar yang cepat dan dapat diandalkan.</p>
@@ -121,8 +121,8 @@ require __DIR__ . '/includes/header.php';
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="card card-trust p-4 h-100">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-3 icon-box">
-                        <i class="bi bi-link-45deg fs-4"></i>
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-3 icon-box-sm">
+                        <i class="bi bi-link-45deg fs-5"></i>
                     </div>
                     <h3 class="fw-semibold mb-2">Direct link permanen</h3>
                     <p class="text-secondary small mb-0">URL stabil untuk di-embed di mana saja. Tidak dihapus sepihak.</p>
@@ -130,8 +130,8 @@ require __DIR__ . '/includes/header.php';
             </div>
             <div class="col-md-4">
                 <div class="card card-trust p-4 h-100">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-3 icon-box">
-                        <i class="bi bi-filetype-bbcode fs-4"></i>
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-3 icon-box-sm">
+                        <i class="bi bi-filetype-bbcode fs-5"></i>
                     </div>
                     <h3 class="fw-semibold mb-2">BBCode & HTML</h3>
                     <p class="text-secondary small mb-0">Setiap upload langsung disertai format forum dan blog, siap salin.</p>
@@ -139,8 +139,8 @@ require __DIR__ . '/includes/header.php';
             </div>
             <div class="col-md-4">
                 <div class="card card-trust p-4 h-100">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-3 icon-box">
-                        <i class="bi bi-collection fs-4"></i>
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-3 icon-box-sm">
+                        <i class="bi bi-collection fs-5"></i>
                     </div>
                     <h3 class="fw-semibold mb-2">Gallery + Album</h3>
                     <p class="text-secondary small mb-0">Kelola koleksi dengan filter, pencarian, dan album yang bisa dibagikan.</p>
@@ -148,8 +148,8 @@ require __DIR__ . '/includes/header.php';
             </div>
             <div class="col-md-4">
                 <div class="card card-trust p-4 h-100">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-3 icon-box">
-                        <i class="bi bi-code-slash fs-4"></i>
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-3 icon-box-sm">
+                        <i class="bi bi-code-slash fs-5"></i>
                     </div>
                     <h3 class="fw-semibold mb-2">REST API</h3>
                     <p class="text-secondary small mb-0">Upload terprogram via API key untuk integrasi developer.</p>
@@ -157,8 +157,8 @@ require __DIR__ . '/includes/header.php';
             </div>
             <div class="col-md-4">
                 <div class="card card-trust p-4 h-100">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-3 icon-box">
-                        <i class="bi bi-clock-history fs-4"></i>
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-3 icon-box-sm">
+                        <i class="bi bi-clock-history fs-5"></i>
                     </div>
                     <h3 class="fw-semibold mb-2">Expiry Otomatis</h3>
                     <p class="text-secondary small mb-0">Atur gambar kedaluwarsa 1 jam hingga 30 hari, atau selamanya.</p>
@@ -166,8 +166,8 @@ require __DIR__ . '/includes/header.php';
             </div>
             <div class="col-md-4">
                 <div class="card card-trust p-4 h-100">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-3 icon-box">
-                        <i class="bi bi-lightning-charge fs-4"></i>
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-3 icon-box-sm">
+                        <i class="bi bi-lightning-charge fs-5"></i>
                     </div>
                     <h3 class="fw-semibold mb-2">CDN Cepat</h3>
                     <p class="text-secondary small mb-0">Disajikan via edge global dengan thumbnail ringan 300px.</p>
@@ -177,15 +177,15 @@ require __DIR__ . '/includes/header.php';
     </section>
 
     <!-- How It Works -->
-    <section id="cara" class="container mb-5">
+    <section id="cara" class="container section-gap">
         <div class="text-center mb-5">
             <h2 class="fw-semibold section-title">Dari upload ke embed dalam 3 langkah</h2>
         </div>
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="card card-trust p-4 h-100 text-center">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-info-subtle text-info rounded-circle mb-3 icon-circle">
-                        <span class="fw-bold tnum fs-1">1</span>
+                    <div class="d-inline-flex align-items-center justify-content-center bg-info-subtle text-info rounded-circle mb-3 icon-num-sm">
+                        <span class="fw-bold tnum fs-2">1</span>
                     </div>
                     <h3 class="fw-semibold mb-2">Upload</h3>
                     <p class="text-secondary small mb-0">Tarik & letakkan hingga 5 gambar, tanpa atau dengan akun.</p>
@@ -193,8 +193,8 @@ require __DIR__ . '/includes/header.php';
             </div>
             <div class="col-md-4">
                 <div class="card card-trust p-4 h-100 text-center">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-info-subtle text-info rounded-circle mb-3 icon-circle">
-                        <span class="fw-bold tnum fs-1">2</span>
+                    <div class="d-inline-flex align-items-center justify-content-center bg-info-subtle text-info rounded-circle mb-3 icon-num-sm">
+                        <span class="fw-bold tnum fs-2">2</span>
                     </div>
                     <h3 class="fw-semibold mb-2">Salin Link</h3>
                     <p class="text-secondary small mb-0">Pilih Direct, BBCode, atau HTML — satu klik tersalin.</p>
@@ -202,8 +202,8 @@ require __DIR__ . '/includes/header.php';
             </div>
             <div class="col-md-4">
                 <div class="card card-trust p-4 h-100 text-center">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-info-subtle text-info rounded-circle mb-3 icon-circle">
-                        <span class="fw-bold tnum fs-1">3</span>
+                    <div class="d-inline-flex align-items-center justify-content-center bg-info-subtle text-info rounded-circle mb-3 icon-num-sm">
+                        <span class="fw-bold tnum fs-2">3</span>
                     </div>
                     <h3 class="fw-semibold mb-2">Kelola</h3>
                     <p class="text-secondary small mb-0">Pantau views di dashboard, atur ke album, hapus kapan saja.</p>
@@ -213,7 +213,7 @@ require __DIR__ . '/includes/header.php';
     </section>
 
     <!-- Personas -->
-    <section class="container mb-5">
+    <section class="container section-gap">
         <div class="text-center mb-5">
             <h2 class="fw-semibold section-title">Dibuat untuk cara Anda bekerja</h2>
         </div>
@@ -246,7 +246,7 @@ require __DIR__ . '/includes/header.php';
     </section>
 
     <!-- API Teaser -->
-    <section id="api" class="container mb-5">
+    <section id="api" class="container section-gap">
         <div class="card card-trust p-4 p-md-5">
             <h2 class="fw-semibold mb-3 auth-title">Integrasi dalam hitungan menit</h2>
             <p class="text-secondary mb-4">Satu header <span class="mono small bg-body-tertiary border rounded px-2 py-1">X-API-Key</span> untuk semua endpoint. Ambil key di dashboard setelah daftar.</p>
@@ -258,7 +258,7 @@ require __DIR__ . '/includes/header.php';
     </section>
 
     <!-- CTA Final -->
-    <section class="container mb-5">
+    <section class="container section-gap">
         <div class="bg-primary rounded-4 p-4 p-md-5 text-center text-white">
             <h2 class="fw-bold section-title">Mulai hosting gambar Anda hari ini</h2>
             <p class="mt-2 text-white text-opacity-75">Gratis, tanpa kartu kredit, tanpa iklan.</p>
