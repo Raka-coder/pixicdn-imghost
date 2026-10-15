@@ -57,27 +57,9 @@ require dirname(__DIR__) . '/includes/header.php';
         </aside>
 
         <!-- Main Content -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
+        <main id="main-content" class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
             <!-- Breadcrumb + Back Button -->
-            <nav aria-label="Breadcrumb" class="mb-4">
-                <div class="d-flex align-items-center flex-wrap gap-2">
-                    <?php if ($back_url !== null): ?>
-                        <a href="<?= sanitize($back_url) ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
-                    <?php endif; ?>
-                    <ol class="breadcrumb mb-0 flex-wrap">
-                        <?php foreach ($crumbs as $i => $c): ?>
-                            <?php if ($i > 0): ?>
-                                <li class="breadcrumb-item"><i class="bi bi-chevron-right text-secondary"></i></li>
-                            <?php endif; ?>
-                            <?php if (isset($c['url'])): ?>
-                                <li class="breadcrumb-item"><a href="<?= sanitize($c['url']) ?>" class="text-decoration-none text-secondary"><?= sanitize($c['label']) ?></a></li>
-                            <?php else: ?>
-                                <li class="breadcrumb-item active fw-semibold text-body-emphasis" aria-current="page"><?= sanitize($c['label']) ?></li>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </ol>
-                </div>
-            </nav>
+            <?php render_breadcrumbs($crumbs, $back_url); ?>
 
             <h1 class="page-title mb-4">Album Saya</h1>
 
@@ -89,7 +71,7 @@ require dirname(__DIR__) . '/includes/header.php';
             <?php endif; ?>
 
             <!-- Create Album Form -->
-            <form method="post" class="card card-trust mb-4" data-bs-toggle="validator">
+            <form method="post" class="card card-trust mb-4">
                 <div class="card-body">
                     <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
                     <div class="row g-3 align-items-end">

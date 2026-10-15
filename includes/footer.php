@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 $is_auth_page = $is_auth_page ?? false;
 $is_public_page = $is_public_page ?? false;
+$confirm_modal = $confirm_modal ?? false;
 ?>
 <?php if (!$is_auth_page && !$is_public_page): ?>
 <!-- Footer Dashboard -->
@@ -36,6 +37,31 @@ $is_public_page = $is_public_page ?? false;
         <p class="mb-0 text-secondary small"><span class="fw-bold text-primary">PixiCDN</span> — self-hosted image hosting.</p>
     </div>
 </footer>
+<?php endif; ?>
+
+<?php if (!empty($confirm_modal)): ?>
+<!-- Generic Confirm Modal (hapus / keluarkan / cabut) -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title fw-bold" id="confirmModalLabel">Konfirmasi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body py-4">
+                <p class="mb-0" data-confirm-message></p>
+            </div>
+            <div class="modal-footer border-top-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <form method="post" action="" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
+                    <span data-confirm-fields></span>
+                    <button type="submit" class="btn btn-danger" data-confirm-submit>Hapus</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <?php endif; ?>
 
 <!-- Bootstrap 5.3.3 JS Bundle via jsDelivr -->
@@ -69,14 +95,42 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 5000);
     });
 
-    // Add loading state to forms
+    // Decorative Bootstrap Icons → sembunyikan dari screen reader
+    document.querySelectorAll('i.bi').forEach(el => el.setAttribute('aria-hidden', 'true'));
+
+    // Offcanvas: tutup otomatis saat link anchor (#...) diklik
+    document.querySelectorAll('.offcanvas a[href^="#"]').forEach(a => {
+        a.addEventListener('click', () => {
+            const oc = a.closest('.offcanvas');
+            if (oc) bootstrap.Offcanvas.getOrCreateInstance(oc).hide();
+        });
+    });
+
+    // Form: validasi dulu, spinner hanya jika valid. Fokus ke field pertama yang salah.
     document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function () {
+        form.addEventListener('submit', function (e) {
+            if (!form.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+                form.classList.add('was-validated');
+                const firstInvalid = form.querySelector(':invalid');
+                if (firstInvalid && typeof firstInvalid.focus === 'function') firstInvalid.focus();
+                return;
+            }
             const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
             if (submitBtn && !submitBtn.disabled) {
                 submitBtn.classList.add('disabled');
                 submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Memproses...';
             }
+        });
+        // Validasi on-blur per field (tanpa menunggu submit)
+        form.querySelectorAll('.form-control, .form-select').forEach(field => {
+            field.addEventListener('blur', function () {
+                if (field.value !== '' || field.classList.contains('is-invalid')) {
+                    field.classList.toggle('is-valid', field.checkValidity());
+                    field.classList.toggle('is-invalid', !field.checkValidity());
+                }
+            });
         });
     });
 
@@ -117,6 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const text = target.value || target.textContent;
                 try {
                     await navigator.clipboard.writeText(text);
+                    if (this.dataset.copyToast === '1') showToast('Disalin ke clipboard', 'success');
                     const tooltip = bootstrap.Tooltip.getOrCreateInstance(this);
                     const originalTitle = this.dataset.bsOriginalTitle;
                     this.dataset.bsOriginalTitle = this.getAttribute('data-bs-title');
@@ -133,13 +188,31 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Modal delete confirmation
-    document.querySelectorAll('[data-bs-toggle="modal"][data-bs-target="#deleteModal"]').forEach(btn => {
+    // Generic confirm modal: trigger wajib [data-confirm-action],
+    // opsional [data-confirm-title/message/submit], [data-confirm-fields] JSON,
+    // [data-confirm-danger="0"] untuk aksi non-destruktif (tombol primary)
+    document.querySelectorAll('[data-confirm-action]').forEach(btn => {
         btn.addEventListener('click', function () {
-            const form = document.getElementById('deleteConfirmForm');
-            if (form && this.dataset.actionUrl) {
-                form.action = this.dataset.actionUrl;
-            }
+            const modal = document.getElementById('confirmModal');
+            if (!modal) return;
+            modal.querySelector('.modal-title').textContent = this.dataset.confirmTitle || 'Konfirmasi';
+            modal.querySelector('[data-confirm-message]').textContent = this.dataset.confirmMessage || 'Apakah Anda yakin?';
+            modal.querySelector('form').setAttribute('action', this.dataset.confirmAction || '');
+            const holder = modal.querySelector('[data-confirm-fields]');
+            holder.innerHTML = '';
+            try {
+                const fields = JSON.parse(this.dataset.confirmFields || '{}');
+                for (const [k, v] of Object.entries(fields)) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = k;
+                    input.value = v;
+                    holder.appendChild(input);
+                }
+            } catch (e) { /* abaikan JSON rusak */ }
+            const submit = modal.querySelector('[data-confirm-submit]');
+            submit.textContent = this.dataset.confirmSubmit || 'Hapus';
+            submit.className = 'btn ' + (this.dataset.confirmDanger === '0' ? 'btn-primary' : 'btn-danger');
         });
     });
 
@@ -233,6 +306,31 @@ function createToastContainer() {
     document.body.appendChild(container);
     return container;
 }
+
+// Init tooltip untuk konten yang dirender dinamis (panggil setelah innerHTML berubah)
+function refreshTooltips(root) {
+    (root || document).querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+        bootstrap.Tooltip.getOrCreateInstance(el);
+    });
+}
+
+// Flash redirect (?deleted=1 / ?ok=1) → toast sukses, lalu bersihkan query URL
+(function flashToToast() {
+    const params = new URLSearchParams(window.location.search);
+    const flashes = { deleted: 'Berhasil dihapus.', ok: 'Berhasil disimpan.' };
+    let toastMsg = null;
+    for (const [key, msg] of Object.entries(flashes)) {
+        if (params.has(key)) {
+            params.delete(key);
+            toastMsg = msg;
+        }
+    }
+    if (toastMsg) {
+        const clean = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+        window.history.replaceState(null, '', clean);
+        window.addEventListener('DOMContentLoaded', () => showToast(toastMsg, 'success'));
+    }
+})();
 </script>
 </body>
 </html>

@@ -56,6 +56,7 @@ $pages = max(1, (int) ceil($total / $per));
 $active = 'gallery';
 $crumbs = [['label' => 'Dashboard', 'url' => '/dashboard/'], ['label' => 'Gallery']];
 $back_url = '/dashboard/';
+$confirm_modal = true;
 ?>
 <?php
 $page_title = 'Gallery — PixiCDN';
@@ -70,27 +71,9 @@ require dirname(__DIR__) . '/includes/header.php';
         </aside>
 
         <!-- Main Content -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
+        <main id="main-content" class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
             <!-- Breadcrumb + Back Button -->
-            <nav aria-label="Breadcrumb" class="mb-4">
-                <div class="d-flex align-items-center flex-wrap gap-2">
-                    <?php if ($back_url !== null): ?>
-                        <a href="<?= sanitize($back_url) ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
-                    <?php endif; ?>
-                    <ol class="breadcrumb mb-0 flex-wrap">
-                        <?php foreach ($crumbs as $i => $c): ?>
-                            <?php if ($i > 0): ?>
-                                <li class="breadcrumb-item"><i class="bi bi-chevron-right text-secondary"></i></li>
-                            <?php endif; ?>
-                            <?php if (isset($c['url'])): ?>
-                                <li class="breadcrumb-item"><a href="<?= sanitize($c['url']) ?>" class="text-decoration-none text-secondary"><?= sanitize($c['label']) ?></a></li>
-                            <?php else: ?>
-                                <li class="breadcrumb-item active fw-semibold text-body-emphasis" aria-current="page"><?= sanitize($c['label']) ?></li>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </ol>
-                </div>
-            </nav>
+            <?php render_breadcrumbs($crumbs, $back_url); ?>
 
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
                 <h1 class="page-title mb-0">Gallery</h1>
@@ -149,13 +132,18 @@ require dirname(__DIR__) . '/includes/header.php';
                                 </div>
                                 <div class="card-body p-3 d-flex justify-content-between align-items-center">
                                     <p class="text-truncate small text-secondary mb-0"><?= sanitize($img['filename']) ?></p>
-                                    <form method="post" action="/delete.php" onsubmit="return confirm('Hapus gambar ini?')" class="d-inline">
-                                        <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
-                                        <input type="hidden" name="id" value="<?= (int) $img['id'] ?>">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" data-bs-title="Hapus gambar" aria-label="Hapus gambar">
+                                    <span data-bs-toggle="tooltip" data-bs-title="Hapus gambar">
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                            data-bs-toggle="modal" data-bs-target="#confirmModal"
+                                            data-confirm-title="Hapus gambar?"
+                                            data-confirm-message="Gambar <?= sanitize($img['filename']) ?> akan dihapus permanen dan tidak bisa dikembalikan."
+                                            data-confirm-action="/delete.php"
+                                            data-confirm-fields='<?= sanitize(json_encode(['id' => (int) $img['id']])) ?>'
+                                            data-confirm-submit="Hapus"
+                                            aria-label="Hapus gambar <?= sanitize($img['filename']) ?>">
                                             <i class="bi bi-trash"></i>
                                         </button>
-                                    </form>
+                                    </span>
                                 </div>
                             </div>
                         </div>

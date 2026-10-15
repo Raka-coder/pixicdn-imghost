@@ -11,10 +11,12 @@ Self-hosted image hosting with permanent direct links. Upload images, get embedd
 
 ## Features
 
-- **Upload & share** — up to 5 files per batch, 5 MB each (JPG/PNG/GIF/WebP); Direct, BBCode, and HTML links with one-click copy; 300px thumbnails; optional auto-expiry.
+- **Upload & share** — up to 5 files per batch, 5 MB each (JPG/PNG/GIF/WebP, strict content sniffing, 25 MP decompression-bomb guard); Direct, BBCode, and HTML links with one-click copy; 300px thumbnails; optional auto-expiry.
 - **Organize** — personal gallery with filter/sort/pagination, albums with public share links, spam-resistant view counter.
 - **Accounts** — registration with one-time recovery code (no email needed), login/logout, password reset, profile, analytics dashboard.
 - **Developer** — REST API authenticated via `X-API-Key`, one-time-display API keys, `/health.php` monitoring endpoint.
+- **Interface** — Bootstrap 5.3 UI with Trust Blue theme (no build step): reusable header/sidebar/footer, breadcrumbs, confirm modals for destructive actions, toast notifications, tabs, tooltips, offcanvas mobile nav, inline form validation with error focus, password-strength meter.
+- **Security** — login timing-attack resistant (constant-time dummy bcrypt verify), generic auth errors, IP rate limiting, CSRF on all forms, `Secure` session cookies behind TLS-terminating proxies, ownership checks with 404-masking on every object route.
 
 ## Architecture
 
@@ -102,6 +104,7 @@ Point `S3_ENDPOINT`, `S3_KEY`, and `S3_SECRET` in `config.php` at it. Without st
 | `S3_PUBLIC_URL` | Base URL stamped into stored image URLs | `https://s3.erdtreeproject.my.id/pixicdn` |
 | `APP_URL` / `APP_DEBUG` | Public base URL / debug mode (always `false` in production) | … |
 | `MAX_FILE_SIZE` / `MAX_FILES_PER_UPLOAD` | Upload limits (5 MB / 5 files) | … |
+| `MAX_IMAGE_PIXELS` | Max decoded pixels per image, anti decompression-bomb (25 MP) | … |
 
 ## Usage
 
@@ -126,11 +129,12 @@ pixicdn/
 ├── dashboard/   # stats, albums, api-key
 ├── api/         # upload, images, delete, me (JSON)
 ├── includes/    # db, auth, upload, s3, api, thumbnail, album, helpers
+│               # + header, sidebar, footer (Bootstrap 5.3 UI shell & theme)
 ├── cron/        # cleanup.php (expiry, purge, log retention)
 ├── migrations/ # 001 schema, 002 test seed
 ├── tests/       # php test scripts (auth, upload, api, album, config, hardening)
 ├── deploy/      # Quadlet units, backup + cleanup timer, rustfs unit
-├── assets/      # app.css (Trust Blue component classes)
+├── assets/      # empty css/js placeholder dirs (theme lives in includes/header.php)
 └── SETUP.md / SECURITY.md / CHANGELOG.md / Caddyfile.example
 ```
 
@@ -151,6 +155,7 @@ Production runs on Proxmox LXC: Server 2 serves the app (Caddy + PHP-FPM via Qua
 | Symptom | Likely cause | Fix |
 |:---|:---|:---|
 | "Response tidak valid" on upload | PHP fatal (memory/GD), not JSON | `memory_limit=512M`, GD with JPEG support |
+| "Dimensi gambar terlalu besar" on upload | Image exceeds `MAX_IMAGE_PIXELS` (decompression-bomb guard) | Downscale below 25 MP or raise the limit |
 | Images auto-download | Missing `ContentType` on old uploads | Re-upload (new uploads set `inline`) |
 | Logged out unexpectedly | `tmp-sessions/` not writable | Create it, writable by PHP-FPM |
 | 500 with no detail | `config.php` missing values / DB down | Check logs, then `/health.php` |

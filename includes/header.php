@@ -210,6 +210,13 @@ a, button, .btn, .form-control, .form-select, .nav-link, .card-trust {
     transition: all 0.2s ease;
 }
 
+/* Hormati preferensi reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    .zoom-hover, .zoom-hover:hover { transform: none; transition: none; }
+    .progress-bar-animated { animation: none; }
+    a, button, .btn, .form-control, .form-select, .nav-link, .card-trust { transition: none; }
+}
+
 /* Offcanvas sidebar width */
 .offcanvas-sidebar {
     max-width: 280px;
@@ -224,6 +231,7 @@ a, button, .btn, .form-control, .form-select, .nav-link, .card-trust {
 </style>
 </head>
 <body class="min-vh-100 d-flex flex-column">
+<a href="#main-content" class="visually-hidden-focusable">Lewati ke konten utama</a>
 
 <?php if (!$is_auth_page && !$is_public_page): ?>
 <!-- Mobile Offcanvas Sidebar (Dashboard) -->
@@ -250,11 +258,29 @@ a, button, .btn, .form-control, .form-select, .nav-link, .card-trust {
 <?php endif; ?>
 
 <?php if ($is_public_page): ?>
+<?php $public_nav_links = $public_nav_links ?? [['label' => 'Gallery', 'url' => '/gallery.php']]; ?>
 <!-- Public Pages: Simple Header (mobile only — desktop pakai navbar halaman) -->
-<header class="bg-white border-bottom border-2 border-primary py-2 d-md-none">
+<header class="bg-white border-bottom border-2 border-primary py-2 sticky-top d-md-none">
     <div class="container-fluid px-3 d-flex align-items-center justify-content-between">
+        <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#publicNavOffcanvas" aria-label="Buka menu navigasi">
+            <i class="bi bi-list fs-5"></i>
+        </button>
         <a href="/" class="fw-bold fs-5 text-primary text-decoration-none"><i class="bi bi-images me-1"></i>PixiCDN</a>
-        <a href="/gallery.php" class="text-secondary text-decoration-none fw-medium">Gallery</a>
+        <div class="nav-spacer"></div>
     </div>
 </header>
+<div class="offcanvas offcanvas-start offcanvas-sidebar" tabindex="-1" id="publicNavOffcanvas" aria-labelledby="publicNavOffcanvasLabel">
+    <div class="offcanvas-header border-bottom border-2 border-primary">
+        <h5 class="offcanvas-title fw-bold text-primary" id="publicNavOffcanvasLabel"><i class="bi bi-images me-2"></i>PixiCDN</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Tutup menu"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column gap-2 p-3">
+        <?php foreach ($public_nav_links as $link): ?>
+        <a href="<?= sanitize($link['url']) ?>" class="btn btn-outline-primary text-start"><?= sanitize($link['label']) ?></a>
+        <?php endforeach; ?>
+        <hr class="my-2">
+        <a href="/auth/login.php" class="btn btn-outline-primary">Masuk</a>
+        <a href="/auth/register.php" class="btn btn-primary">Upload gratis</a>
+    </div>
+</div>
 <?php endif; ?>

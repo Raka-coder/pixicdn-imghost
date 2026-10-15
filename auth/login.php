@@ -61,7 +61,7 @@ $is_auth_page = true;
 require dirname(__DIR__) . '/includes/header.php';
 ?>
 
-<main class="flex-grow-1 d-flex align-items-center justify-content-center py-5 px-3">
+<main id="main-content" class="flex-grow-1 d-flex align-items-center justify-content-center py-5 px-3">
     <div class="w-100 auth-card">
         <div class="text-center mb-4">
             <a href="/" class="fw-bold fs-4 text-primary text-decoration-none"><i class="bi bi-images me-1"></i>PixiCDN</a>

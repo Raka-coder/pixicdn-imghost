@@ -55,10 +55,14 @@ function start_secure_session(): void
         session_save_path($save_path);
     }
     session_name(defined('SESSION_NAME') ? SESSION_NAME : 'PIXICDN_SESSION');
+    // Hormati TLS yang di-terminate di reverse proxy (Caddy/Cloudflare Tunnel):
+    // PHP melihat HTTP polos padahal browser memakai HTTPS.
+    $forwarded_proto = strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? ''));
+    $is_https = isset($_SERVER['HTTPS']) || $forwarded_proto === 'https';
     session_set_cookie_params([
         'lifetime' => 3600,
         'path' => '/',
-        'secure' => isset($_SERVER['HTTPS']),
+        'secure' => $is_https,
         'httponly' => true,
         'samesite' => 'Lax',
     ]);
@@ -160,4 +164,33 @@ function generate_filename(string $extension): string
 {
     $extension = strtolower(trim($extension));
     return date('Ymd') . '_' . bin2hex(random_bytes(8)) . '.' . $extension;
+}
+
+/**
+ * Render blok navigasi atas halaman internal: tombol kembali (opsional)
+ * + breadcrumb Bootstrap. Item terakhir = halaman aktif (tanpa URL).
+ * Aturan: halaman album TIDAK pakai $back_url (breadcrumb + sidebar cukup).
+ *
+ * @param array<int, array{label: string, url?: string}> $crumbs Jejak navigasi
+ * @param string|null $back_url URL tombol kembali atau null
+ * @return void Langsung echo HTML
+ */
+function render_breadcrumbs(array $crumbs, ?string $back_url = null): void
+{
+    echo '<nav aria-label="Breadcrumb" class="mb-4"><div class="d-flex align-items-center flex-wrap gap-2">';
+    if ($back_url !== null) {
+        echo '<a href="' . sanitize($back_url) . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>';
+    }
+    echo '<ol class="breadcrumb mb-0 flex-wrap">';
+    foreach ($crumbs as $i => $c) {
+        if ($i > 0) {
+            echo '<li class="breadcrumb-item"><i class="bi bi-chevron-right text-secondary"></i></li>';
+        }
+        if (isset($c['url'])) {
+            echo '<li class="breadcrumb-item"><a href="' . sanitize($c['url']) . '" class="text-decoration-none text-secondary">' . sanitize($c['label']) . '</a></li>';
+        } else {
+            echo '<li class="breadcrumb-item active fw-semibold text-body-emphasis" aria-current="page">' . sanitize($c['label']) . '</li>';
+        }
+    }
+    echo '</ol></div></nav>';
 }

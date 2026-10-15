@@ -59,7 +59,7 @@ $is_public_page = true;
 require __DIR__ . '/includes/header.php';
 ?>
 
-<main class="flex-grow-1">
+<main id="main-content" class="flex-grow-1">
     <div class="container py-5">
         <!-- Breadcrumb -->
         <nav aria-label="Breadcrumb" class="mb-4">

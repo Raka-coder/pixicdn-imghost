@@ -46,3 +46,4 @@ defined('CSRF_TOKEN_KEY') || define('CSRF_TOKEN_KEY', 'csrf_token');
 defined('MAX_FILE_SIZE') || define('MAX_FILE_SIZE', 5242880); // 5 MB
 defined('MAX_FILES_PER_UPLOAD') || define('MAX_FILES_PER_UPLOAD', 5);
 defined('ALLOWED_EXTENSIONS') || define('ALLOWED_EXTENSIONS', ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+defined('MAX_IMAGE_PIXELS') || define('MAX_IMAGE_PIXELS', 25000000); // 25 MP — anti decompression-bomb GD

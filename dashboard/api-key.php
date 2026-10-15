@@ -54,6 +54,7 @@ $masked = $has_key ? '••••••••' . substr((string) $row['api_key'
 $active = 'api-key';
 $crumbs = [['label' => 'Dashboard', 'url' => '/dashboard/'], ['label' => 'API Key']];
 $back_url = null;
+$confirm_modal = true;
 ?>
 <?php
 $page_title = 'API Key — PixiCDN';
@@ -68,27 +69,9 @@ require dirname(__DIR__) . '/includes/header.php';
         </aside>
 
         <!-- Main Content -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
+        <main id="main-content" class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
             <!-- Breadcrumb -->
-            <nav aria-label="Breadcrumb" class="mb-4">
-                <div class="d-flex align-items-center flex-wrap gap-2">
-                    <?php if ($back_url !== null): ?>
-                        <a href="<?= sanitize($back_url) ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
-                    <?php endif; ?>
-                    <ol class="breadcrumb mb-0 flex-wrap">
-                        <?php foreach ($crumbs as $i => $c): ?>
-                            <?php if ($i > 0): ?>
-                                <li class="breadcrumb-item"><i class="bi bi-chevron-right text-secondary"></i></li>
-                            <?php endif; ?>
-                            <?php if (isset($c['url'])): ?>
-                                <li class="breadcrumb-item"><a href="<?= sanitize($c['url']) ?>" class="text-decoration-none text-secondary"><?= sanitize($c['label']) ?></a></li>
-                            <?php else: ?>
-                                <li class="breadcrumb-item active fw-semibold text-body-emphasis" aria-current="page"><?= sanitize($c['label']) ?></li>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </ol>
-                </div>
-            </nav>
+            <?php render_breadcrumbs($crumbs, $back_url); ?>
 
             <h1 class="page-title mb-4">API Key</h1>
             <p class="text-secondary small mb-4">Pakai di header <code class="mono small bg-body-tertiary border rounded px-2 py-1">X-API-Key</code>. Key hanya ditampilkan sekali setelah generate.</p>
@@ -129,11 +112,15 @@ require dirname(__DIR__) . '/includes/header.php';
             </form>
 
             <?php if ($has_key): ?>
-                <form method="post" class="d-flex gap-2" onsubmit="return confirm('Hapus API key?')">
-                    <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
-                    <input type="hidden" name="action" value="revoke">
-                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash me-1"></i>Hapus</button>
-                </form>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-danger"
+                        data-bs-toggle="modal" data-bs-target="#confirmModal"
+                        data-confirm-title="Cabut API key?"
+                        data-confirm-message="Key lama (<?= sanitize($masked) ?>) langsung berhenti berfungsi. Aplikasi yang memakainya perlu key baru."
+                        data-confirm-action=""
+                        data-confirm-fields='<?= sanitize(json_encode(['action' => 'revoke'])) ?>'
+                        data-confirm-submit="Cabut key"><i class="bi bi-trash me-1"></i>Hapus</button>
+                </div>
             <?php endif; ?>
 
             <!-- API Documentation Card -->

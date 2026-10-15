@@ -28,23 +28,31 @@ try {
 
 $page_title = 'PixiCDN — Hosting Gambar Gratis dengan Direct Link';
 $is_public_page = true;
+$public_nav_links = [
+    ['label' => 'Fitur', 'url' => '#fitur'],
+    ['label' => 'Cara kerja', 'url' => '#cara'],
+    ['label' => 'API', 'url' => '#api'],
+    ['label' => 'Gallery', 'url' => '/gallery.php'],
+];
 require __DIR__ . '/includes/header.php';
 ?>
 
-<main class="flex-grow-1">
-    <!-- Navbar Desktop -->
+<main id="main-content" class="flex-grow-1">
+    <!-- Navbar Desktop (komponen navbar Bootstrap) -->
     <header class="bg-white border-bottom border-2 border-primary d-none d-md-block sticky-top">
-        <nav class="container py-2 d-flex align-items-center justify-content-between" aria-label="Navigasi utama">
-            <a href="/" class="fw-bold fs-4 text-primary text-decoration-none"><i class="bi bi-images me-1"></i>PixiCDN</a>
-            <div class="d-flex align-items-center gap-4">
-                <a href="#fitur" class="text-secondary text-decoration-none fw-medium small nav-landing">Fitur</a>
-                <a href="#cara" class="text-secondary text-decoration-none fw-medium small nav-landing">Cara kerja</a>
-                <a href="#api" class="text-secondary text-decoration-none fw-medium small nav-landing">API</a>
-                <a href="/gallery.php" class="text-secondary text-decoration-none fw-medium small nav-landing">Gallery</a>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                <a href="/auth/login.php" class="btn btn-outline-primary btn-sm">Masuk</a>
-                <a href="/auth/register.php" class="btn btn-primary btn-sm">Upload gratis</a>
+        <nav class="navbar navbar-expand-md py-2" aria-label="Navigasi utama">
+            <div class="container">
+                <a href="/" class="navbar-brand fw-bold text-primary"><i class="bi bi-images me-1"></i>PixiCDN</a>
+                <ul class="navbar-nav mx-auto mb-0">
+                    <li class="nav-item"><a href="#fitur" class="nav-link text-secondary fw-medium small nav-landing">Fitur</a></li>
+                    <li class="nav-item"><a href="#cara" class="nav-link text-secondary fw-medium small nav-landing">Cara kerja</a></li>
+                    <li class="nav-item"><a href="#api" class="nav-link text-secondary fw-medium small nav-landing">API</a></li>
+                    <li class="nav-item"><a href="/gallery.php" class="nav-link text-secondary fw-medium small nav-landing">Gallery</a></li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="/auth/login.php" class="btn btn-outline-primary btn-sm">Masuk</a>
+                    <a href="/auth/register.php" class="btn btn-primary btn-sm">Upload gratis</a>
+                </div>
             </div>
         </nav>
     </header>
@@ -66,15 +74,29 @@ require __DIR__ . '/includes/header.php';
                 <div class="card card-trust p-4 p-md-5 h-100">
                     <h3 class="fw-semibold mb-1">Setelah upload, Anda dapat</h3>
                     <p class="text-secondary small mb-4">Tiga format siap salin untuk setiap gambar.</p>
-                    <div class="d-grid gap-3 mono small">
-                        <div class="bg-body-tertiary border rounded-3 p-3 text-break copy-box" role="button" tabindex="0" data-copy-target="linkDirect" data-bs-toggle="tooltip" data-bs-title="Klik untuk salin">
-                            https://pixicdn.erdtreeproject.my.id/abc123.jpg
+                    <ul class="nav nav-pills mb-3" id="demoTab" role="tablist" aria-label="Format link demo">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="tab-direct" data-bs-toggle="tab" data-bs-target="#pane-direct" type="button" role="tab" aria-controls="pane-direct" aria-selected="true">Direct</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tab-bbcode" data-bs-toggle="tab" data-bs-target="#pane-bbcode" type="button" role="tab" aria-controls="pane-bbcode" aria-selected="false">BBCode</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tab-html" data-bs-toggle="tab" data-bs-target="#pane-html" type="button" role="tab" aria-controls="pane-html" aria-selected="false">HTML</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="pane-direct" role="tabpanel" aria-labelledby="tab-direct" tabindex="0">
+                            <div class="bg-body-tertiary border rounded-3 p-3 text-break mono small mb-2">https://pixicdn.erdtreeproject.my.id/abc123.jpg</div>
+                            <button type="button" class="btn btn-sm btn-outline-primary w-100" data-copy-target="linkDirect" data-copy-toast="1" data-bs-toggle="tooltip" data-bs-title="Salin ke clipboard"><i class="bi bi-clipboard me-1"></i>Salin link Direct</button>
                         </div>
-                        <div class="bg-body-tertiary border rounded-3 p-3 text-break copy-box" role="button" tabindex="0" data-copy-target="linkBBCode" data-bs-toggle="tooltip" data-bs-title="Klik untuk salin">
-                            [img]https://pixicdn.erdtreeproject.my.id/abc123.jpg[/img]
+                        <div class="tab-pane fade" id="pane-bbcode" role="tabpanel" aria-labelledby="tab-bbcode" tabindex="0">
+                            <div class="bg-body-tertiary border rounded-3 p-3 text-break mono small mb-2">[img]https://pixicdn.erdtreeproject.my.id/abc123.jpg[/img]</div>
+                            <button type="button" class="btn btn-sm btn-outline-primary w-100" data-copy-target="linkBBCode" data-copy-toast="1" data-bs-toggle="tooltip" data-bs-title="Salin ke clipboard"><i class="bi bi-clipboard me-1"></i>Salin BBCode</button>
                         </div>
-                        <div class="bg-body-tertiary border rounded-3 p-3 text-break copy-box" role="button" tabindex="0" data-copy-target="linkHTML" data-bs-toggle="tooltip" data-bs-title="Klik untuk salin">
-                            &lt;img src="https://pixicdn.erdtreeproject.my.id/abc123.jpg"&gt;
+                        <div class="tab-pane fade" id="pane-html" role="tabpanel" aria-labelledby="tab-html" tabindex="0">
+                            <div class="bg-body-tertiary border rounded-3 p-3 text-break mono small mb-2">&lt;img src="https://pixicdn.erdtreeproject.my.id/abc123.jpg"&gt;</div>
+                            <button type="button" class="btn btn-sm btn-outline-primary w-100" data-copy-target="linkHTML" data-copy-toast="1" data-bs-toggle="tooltip" data-bs-title="Salin ke clipboard"><i class="bi bi-clipboard me-1"></i>Salin HTML</button>
                         </div>
                     </div>
                     <input type="hidden" id="linkDirect" value="https://pixicdn.erdtreeproject.my.id/abc123.jpg">
@@ -131,7 +153,7 @@ require __DIR__ . '/includes/header.php';
             <div class="col-md-4">
                 <div class="card card-trust p-4 h-100">
                     <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-3 icon-box-sm">
-                        <i class="bi bi-filetype-bbcode fs-5"></i>
+                        <i class="bi bi-file-earmark-code"></i>
                     </div>
                     <h3 class="fw-semibold mb-2">BBCode & HTML</h3>
                     <p class="text-secondary small mb-0">Setiap upload langsung disertai format forum dan blog, siap salin.</p>
@@ -253,9 +275,39 @@ require __DIR__ . '/includes/header.php';
             <pre class="mono small bg-dark text-light rounded-3 p-4 overflow-auto"><code>curl -H "X-API-Key: <key>" \
   -F image=@foto.jpg \
   https://pixicdn.erdtreeproject.my.id/api/upload.php</code></pre>
-            <p class="mt-4 mb-0"><a href="/auth/register.php" class="fw-semibold link-primary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">Dapatkan API key gratis →</a></p>
+            <p class="mt-4 mb-0 d-flex flex-wrap gap-2">
+                <a href="/auth/register.php" class="fw-semibold link-primary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">Dapatkan API key gratis →</a>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#apiResponseModal"><i class="bi bi-braces me-1"></i>Lihat contoh respons</button>
+            </p>
         </div>
     </section>
+
+    <!-- API Response Modal -->
+    <div class="modal fade" id="apiResponseModal" tabindex="-1" aria-labelledby="apiResponseModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold" id="apiResponseModalLabel"><i class="bi bi-braces me-2 text-primary"></i>Contoh respons API</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <pre class="mono small bg-dark text-light rounded-3 p-3 overflow-auto mb-3" id="apiSampleJson"><code>{
+  "success": true,
+  "data": [{
+    "url": "https://pixicdn.erdtreeproject.my.id/abc123.jpg",
+    "bbcode": "[img]https://pixicdn.erdtreeproject.my.id/abc123.jpg[/img]",
+    "html": "&lt;img src=\"https://pixicdn.erdtreeproject.my.id/abc123.jpg\"&gt;"
+  }]
+}</code></pre>
+                    <button type="button" class="btn btn-sm btn-outline-primary" data-copy-target="apiSampleJson" data-copy-toast="1" data-bs-toggle="tooltip" data-bs-title="Salin JSON"><i class="bi bi-clipboard me-1"></i>Salin JSON</button>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <a href="/auth/register.php" class="btn btn-primary">Dapatkan API key</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- CTA Final -->
     <section class="container section-gap">

@@ -43,6 +43,12 @@ function validate_image_file(array $file): ?string
     if ((int) ($file['size'] ?? 0) <= 0) {
         return 'File kosong.';
     }
+    // Anti decompression-bomb: PNG 5MB bisa terurai >100MP dan OOM-kan GD.
+    // Hanya dicek bila header dimensi terbaca; file hilang/rusak ditolak tahap berikutnya.
+    $dims = @getimagesize((string) ($file['tmp_name'] ?? ''));
+    if ($dims !== false && ($dims[0] * $dims[1]) > MAX_IMAGE_PIXELS) {
+        return 'Dimensi gambar terlalu besar (maks 25 megapiksel).';
+    }
     return null;
 }
 
@@ -99,7 +105,9 @@ function handle_upload(array $file, ?int $user_id, string $ip, string $user_agen
     $mime = (string) $finfo->file($tmp);
     $ext = strtolower(pathinfo((string) $file['name'], PATHINFO_EXTENSION));
     $expected = UPLOAD_MIME_MAP[$ext] ?? '';
-    if ($expected === '' || ($mime !== $expected && !str_starts_with($mime, 'image/'))) {
+    // Strict match: ekstensi harus sama persis dengan isi file.
+    // (ContentType S3 juga di-sniff dari isi, tapi jangan longgarkan di sini.)
+    if ($expected === '' || $mime !== $expected) {
         return ['ok' => false, 'error' => 'Tipe file tidak sesuai ekstensi.'];
     }
     $filename = generate_filename($ext);

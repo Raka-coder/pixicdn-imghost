@@ -80,6 +80,7 @@ $crumbs = [
     ['label' => $album['name']],
 ];
 $back_url = null; // HAPUS tombol kembali manual — breadcrumbs + sidebar sudah mewakili
+$confirm_modal = true;
 ?>
 <?php
 $page_title = sanitize($album['name']) . ' — PixiCDN';
@@ -94,27 +95,9 @@ require dirname(__DIR__) . '/includes/header.php';
         </aside>
 
         <!-- Main Content -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
+        <main id="main-content" class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
             <!-- Breadcrumb (hierarchy: Dashboard > Album > [Nama Album]) -->
-            <nav aria-label="Breadcrumb" class="mb-4">
-                <div class="d-flex align-items-center flex-wrap gap-2">
-                    <?php if ($back_url !== null): ?>
-                        <a href="<?= sanitize($back_url) ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
-                    <?php endif; ?>
-                    <ol class="breadcrumb mb-0 flex-wrap">
-                        <?php foreach ($crumbs as $i => $c): ?>
-                            <?php if ($i > 0): ?>
-                                <li class="breadcrumb-item"><i class="bi bi-chevron-right text-secondary"></i></li>
-                            <?php endif; ?>
-                            <?php if (isset($c['url'])): ?>
-                                <li class="breadcrumb-item"><a href="<?= sanitize($c['url']) ?>" class="text-decoration-none text-secondary"><?= sanitize($c['label']) ?></a></li>
-                            <?php else: ?>
-                                <li class="breadcrumb-item active fw-semibold text-body-emphasis" aria-current="page"><?= sanitize($c['label']) ?></li>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </ol>
-                </div>
-            </nav>
+            <?php render_breadcrumbs($crumbs, $back_url); ?>
 
             <h1 class="page-title mb-2"><?= sanitize($album['name']) ?></h1>
             <p class="text-secondary small mb-4"><?= (int) $album['image_count'] ?> gambar · <?= $album['is_public'] ? 'publik' : 'privat' ?></p>
@@ -148,7 +131,8 @@ require dirname(__DIR__) . '/includes/header.php';
             <?php endif; ?>
 
             <!-- Add Image Form -->
-            <form method="post" class="card card-trust mb-4" data-bs-toggle="validator">
+            <!-- Add Image Form -->
+            <form method="post" class="card card-trust mb-4">
                 <div class="card-body">
                     <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
                     <input type="hidden" name="action" value="add">
@@ -179,18 +163,22 @@ require dirname(__DIR__) . '/includes/header.php';
                                     </button>
                                 </div>
                                 <div class="card-body p-2 d-flex gap-2">
-                                    <form method="post" class="flex-grow-1" data-bs-toggle="tooltip" data-bs-title="Jadikan sampul" aria-label="Jadikan sampul">
+                                    <form method="post" class="flex-grow-1">
                                         <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
                                         <input type="hidden" name="action" value="cover">
                                         <input type="hidden" name="image_id" value="<?= (int) $img['id'] ?>">
-                                        <button type="submit" class="btn btn-sm btn-outline-primary w-100"><i class="bi bi-image me-1"></i>Sampul</button>
+                                        <button type="submit" class="btn btn-sm btn-outline-primary w-100" data-bs-toggle="tooltip" data-bs-title="Jadikan sampul" aria-label="Jadikan sampul <?= sanitize($img['filename']) ?>"><i class="bi bi-image me-1"></i>Sampul</button>
                                     </form>
-                                    <form method="post" class="flex-grow-1" onsubmit="return confirm('Keluarkan dari album?')" data-bs-toggle="tooltip" data-bs-title="Keluarkan dari album" aria-label="Keluarkan dari album">
-                                        <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
-                                        <input type="hidden" name="action" value="remove">
-                                        <input type="hidden" name="image_id" value="<?= (int) $img['id'] ?>">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger w-100"><i class="bi bi-box-arrow-right me-1"></i>Keluarkan</button>
-                                    </form>
+                                    <span class="flex-grow-1" data-bs-toggle="tooltip" data-bs-title="Keluarkan dari album">
+                                        <button type="button" class="btn btn-sm btn-outline-danger w-100"
+                                            data-bs-toggle="modal" data-bs-target="#confirmModal"
+                                            data-confirm-title="Keluarkan gambar?"
+                                            data-confirm-message="Gambar <?= sanitize($img['filename']) ?> dikeluarkan dari album ini. File tidak ikut terhapus."
+                                            data-confirm-action=""
+                                            data-confirm-fields='<?= sanitize(json_encode(['action' => 'remove', 'image_id' => (int) $img['id']])) ?>'
+                                            data-confirm-submit="Keluarkan"
+                                            aria-label="Keluarkan <?= sanitize($img['filename']) ?> dari album"><i class="bi bi-box-arrow-right me-1"></i>Keluarkan</button>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -207,19 +195,23 @@ require dirname(__DIR__) . '/includes/header.php';
             <?php endif; ?>
 
             <!-- Delete Album -->
-            <form method="post" class="card card-trust border-danger" onsubmit="return confirm('Hapus album ini? (gambar tidak ikut terhapus)')">
+            <div class="card card-trust border-danger">
                 <div class="card-body">
-                    <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
-                    <input type="hidden" name="action" value="delete">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <div>
                             <h3 class="fw-semibold text-danger mb-1">Hapus Album</h3>
                             <p class="text-secondary small mb-0">Album akan dihapus permanen. Gambar di dalamnya tidak terhapus.</p>
                         </div>
-                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash me-1"></i>Hapus album</button>
+                        <button type="button" class="btn btn-danger"
+                            data-bs-toggle="modal" data-bs-target="#confirmModal"
+                            data-confirm-title="Hapus album?"
+                            data-confirm-message="Album <?= sanitize($album['name']) ?> akan dihapus permanen. Gambar di dalamnya tidak ikut terhapus."
+                            data-confirm-action=""
+                            data-confirm-fields='<?= sanitize(json_encode(['action' => 'delete'])) ?>'
+                            data-confirm-submit="Hapus album"><i class="bi bi-trash me-1"></i>Hapus album</button>
                     </div>
                 </div>
-            </form>
+            </div>
 
             <div class="mt-3 text-center">
                 <a href="/dashboard/albums.php" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Semua album</a>
