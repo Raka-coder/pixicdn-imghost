@@ -67,7 +67,7 @@ require __DIR__ . '/includes/header.php';
                 <i class="bi bi-cloud-arrow-up fs-1 text-secondary mb-3"></i>
                 <p class="mb-2 fw-medium">Tarik & letakkan gambar di sini, atau klik untuk pilih</p>
                 <input id="files" type="file" accept=".jpg,.jpeg,.png,.gif,.webp" multiple class="d-none" aria-label="Pilih file gambar">
-                <div id="preview" class="row g-3 mt-4"></div>
+                <div id="preview" class="row g-3 mt-4 justify-content-center"></div>
             </div>
 
             <!-- Progress Bar -->
@@ -176,24 +176,35 @@ drop.addEventListener('drop', x => add([...x.dataTransfer.files]));
 input.addEventListener('change', () => add([...input.files]));
 
 function add(list) {
-    files = [...files, ...list].slice(0, 5);
-    prev.innerHTML = '';
-    go.disabled = files.length === 0;
-    
-    files.forEach(f => {
+    const valid = [];
+    list.forEach(f => {
         if (!f.type.startsWith('image/')) { showToast(f.name + ' bukan gambar', 'error'); return; }
         if (f.size > 5242880) { showToast(f.name + ' melebihi 5 MB', 'error'); return; }
-        
+        valid.push(f);
+    });
+    // Reset input agar file yang sama bisa dipilih ulang (change tak fire dua kali)
+    input.value = '';
+    if (files.length + valid.length > 5) {
+        showToast('Maksimal 5 file sekaligus — kelebihan diabaikan', 'error');
+    }
+    files = [...files, ...valid].slice(0, 5);
+    prev.innerHTML = '';
+    go.disabled = files.length === 0;
+
+    files.forEach(f => {
         const col = document.createElement('div');
         col.className = 'col-6 col-md-3';
         const img = document.createElement('img');
         img.src = URL.createObjectURL(f);
         img.loading = 'lazy';
+        img.alt = f.name;
         img.className = 'w-100 rounded border thumb-preview';
         col.appendChild(img);
         prev.appendChild(col);
     });
 }
+// Klik preview jangan ikut membuka dialog file
+prev.addEventListener('click', e => e.stopPropagation());
 
 go.addEventListener('click', () => {
     if (!files.length) { showToast('Pilih file dulu', 'error'); return; }

@@ -81,6 +81,7 @@ $crumbs = [
 ];
 $back_url = null; // HAPUS tombol kembali manual — breadcrumbs + sidebar sudah mewakili
 $confirm_modal = true;
+$is_dashboard = true;
 ?>
 <?php
 $page_title = sanitize($album['name']) . ' — PixiCDN';

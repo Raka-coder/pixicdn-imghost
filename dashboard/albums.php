@@ -43,6 +43,7 @@ $albums = $stmt->fetchAll();
 $active = 'album';
 $crumbs = [['label' => 'Dashboard', 'url' => '/dashboard/'], ['label' => 'Album']];
 $back_url = null;
+$is_dashboard = true;
 ?>
 <?php
 $page_title = 'Album — PixiCDN';

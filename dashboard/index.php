@@ -17,6 +17,7 @@ require_once dirname(__DIR__) . '/config.example.php';
 require_once dirname(__DIR__) . '/includes/helpers.php';
 require_once dirname(__DIR__) . '/includes/db.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
+require_once dirname(__DIR__) . '/includes/dashboard.php';
 
 require_login();
 $user = current_user();
@@ -25,51 +26,26 @@ $crumbs = [['label' => 'Dashboard']];
 $back_url = null;
 $load_chartjs = true;
 
-$stats = ['total' => 0, 'views' => 0];
-$chart_labels = [];
-$chart_data = [];
-$views30_labels = [];
-$views30_data = [];
-$top = [];
-
+// Satu sumber metrik dari database (bukan dummy). Gagal DB → flag error,
+// halaman tetap tampil dengan angka 0 + peringatan, bukan angka palsu.
+$metrics = ['total' => 0, 'views' => 0, 'storage_used' => 0, 'storage_quota' => 0, 'uploads7' => ['labels' => [], 'data' => []], 'views30' => ['labels' => [], 'data' => []], 'top' => []];
+$stats_error = false;
 try {
-    $stmt = getDB()->prepare('SELECT COUNT(*) AS total, COALESCE(SUM(views),0) AS views FROM images WHERE user_id = ? AND is_deleted = FALSE');
-    $stmt->execute([(int) $user['id']]);
-    $row = $stmt->fetch();
-    if ($row) {
-        $stats = ['total' => (int) $row['total'], 'views' => (int) $row['views']];
-    }
-    $stmt = getDB()->prepare('SELECT DATE(uploaded_at) AS d, COUNT(*) AS c FROM images WHERE user_id = ? AND uploaded_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) GROUP BY DATE(uploaded_at) ORDER BY d');
-    $stmt->execute([(int) $user['id']]);
-    $map = [];
-    foreach ($stmt->fetchAll() as $r) {
-        $map[$r['d']] = (int) $r['c'];
-    }
-    for ($i = 6; $i >= 0; $i--) {
-        $d = date('Y-m-d', strtotime("-$i days"));
-        $chart_labels[] = $d;
-        $chart_data[] = $map[$d] ?? 0;
-    }
-    $stmt = getDB()->prepare('SELECT DATE(viewed_at) AS d, COUNT(*) AS c FROM view_logs v JOIN images i ON i.id = v.image_id WHERE i.user_id = ? AND v.viewed_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) GROUP BY DATE(viewed_at) ORDER BY d');
-    $stmt->execute([(int) $user['id']]);
-    $vmap = [];
-    foreach ($stmt->fetchAll() as $r) {
-        $vmap[$r['d']] = (int) $r['c'];
-    }
-    for ($i = 29; $i >= 0; $i--) {
-        $d = date('Y-m-d', strtotime("-$i days"));
-        $views30_labels[] = substr($d, 5);
-        $views30_data[] = $vmap[$d] ?? 0;
-    }
-    $stmt = getDB()->prepare('SELECT filename, public_url, thumbnail_url, views FROM images WHERE user_id = ? AND is_deleted = FALSE ORDER BY views DESC LIMIT 10');
-    $stmt->execute([(int) $user['id']]);
-    $top = $stmt->fetchAll();
+    $metrics = get_dashboard_stats((int) $user['id']);
 } catch (PDOException $e) {
     error_log('Dashboard stats gagal: ' . $e->getMessage());
+    $stats_error = true;
 }
+$chart_labels = $metrics['uploads7']['labels'];
+$chart_data = $metrics['uploads7']['data'];
+$views30_labels = $metrics['views30']['labels'];
+$views30_data = $metrics['views30']['data'];
+$top = $metrics['top'];
+$stats = ['total' => $metrics['total'], 'views' => $metrics['views']];
 ?>
 <?php
 $page_title = 'Dashboard — PixiCDN';
+$is_dashboard = true;
 require dirname(__DIR__) . '/includes/header.php';
 ?>
 
@@ -85,50 +61,57 @@ require dirname(__DIR__) . '/includes/header.php';
             <!-- Breadcrumb + Back Button -->
             <?php render_breadcrumbs($crumbs, $back_url); ?>
 
-            <h1 class="page-title mb-4">Halo, <?= sanitize($user['username']) ?></h1>
+            <h1 class="page-title mb-2">Halo, <?= sanitize($user['username']) ?></h1>
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <button type="button" id="refreshStats" class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-clockwise me-1"></i>Perbarui</button>
+                <span class="text-secondary small" id="statsUpdated">Dimuat <?= date('H:i:s') ?></span>
+            </div>
+            <?php if ($stats_error): ?>
+            <div class="alert alert-warning alert-permanent" role="alert">Data statistik gagal dimuat dari database. Angka di bawah mungkin tidak akurat — coba tekan Perbarui.</div>
+            <?php endif; ?>
 
             <!-- Quick Actions -->
             <div class="row g-3 mb-4" aria-label="Aksi cepat">
                 <div class="col-6 col-md-3">
-                    <a href="/upload.php" class="card card-trust h-100 d-flex align-items-center gap-3 text-decoration-none">
-                        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-box">
-                            <i class="bi bi-cloud-upload fs-4"></i>
+                    <a href="/upload.php" class="card card-trust h-100 d-flex align-items-center gap-2 text-decoration-none p-3">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3" style="width: 40px; height: 40px; flex-shrink: 0;">
+                            <i class="bi bi-cloud-upload fs-5"></i>
                         </div>
                         <div>
-                            <div class="fw-semibold">Upload</div>
+                            <div class="fw-semibold small">Upload</div>
                             <div class="text-secondary small">Gambar baru</div>
                         </div>
                     </a>
                 </div>
                 <div class="col-6 col-md-3">
-                    <a href="/gallery.php" class="card card-trust h-100 d-flex align-items-center gap-3 text-decoration-none">
-                        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-box">
-                            <i class="bi bi-images fs-4"></i>
+                    <a href="/gallery.php" class="card card-trust h-100 d-flex align-items-center gap-2 text-decoration-none p-3">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3" style="width: 40px; height: 40px; flex-shrink: 0;">
+                            <i class="bi bi-images fs-5"></i>
                         </div>
                         <div>
-                            <div class="fw-semibold">Gallery</div>
+                            <div class="fw-semibold small">Gallery</div>
                             <div class="text-secondary small">Koleksi saya</div>
                         </div>
                     </a>
                 </div>
                 <div class="col-6 col-md-3">
-                    <a href="/dashboard/albums.php" class="card card-trust h-100 d-flex align-items-center gap-3 text-decoration-none">
-                        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-box">
-                            <i class="bi bi-folder-plus fs-4"></i>
+                    <a href="/dashboard/albums.php" class="card card-trust h-100 d-flex align-items-center gap-2 text-decoration-none p-3">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3" style="width: 40px; height: 40px; flex-shrink: 0;">
+                            <i class="bi bi-folder-plus fs-5"></i>
                         </div>
                         <div>
-                            <div class="fw-semibold">Album</div>
+                            <div class="fw-semibold small">Album</div>
                             <div class="text-secondary small">Buat & atur</div>
                         </div>
                     </a>
                 </div>
                 <div class="col-6 col-md-3">
-                    <a href="/dashboard/api-key.php" class="card card-trust h-100 d-flex align-items-center gap-3 text-decoration-none">
-                        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 icon-box">
-                            <i class="bi bi-key fs-4"></i>
+                    <a href="/dashboard/api-key.php" class="card card-trust h-100 d-flex align-items-center gap-2 text-decoration-none p-3">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3" style="width: 40px; height: 40px; flex-shrink: 0;">
+                            <i class="bi bi-key fs-5"></i>
                         </div>
                         <div>
-                            <div class="fw-semibold">API Key</div>
+                            <div class="fw-semibold small">API Key</div>
                             <div class="text-secondary small">Integrasi</div>
                         </div>
                     </a>
@@ -140,19 +123,19 @@ require dirname(__DIR__) . '/includes/header.php';
                 <div class="col-md-4">
                     <div class="card card-trust p-4 text-center h-100">
                         <p class="text-secondary small mb-1"><i class="bi bi-images me-1"></i>Total gambar</p>
-                        <p class="display-4 fw-bold tnum text-primary"><?= (int) $stats['total'] ?></p>
+                        <p class="display-4 fw-bold tnum text-primary" id="statTotal"><?= (int) $stats['total'] ?></p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card card-trust p-4 text-center h-100">
                         <p class="text-secondary small mb-1"><i class="bi bi-eye me-1"></i>Total views</p>
-                        <p class="display-4 fw-bold tnum text-info"><?= (int) $stats['views'] ?></p>
+                        <p class="display-4 fw-bold tnum text-info" id="statViews"><?= (int) $stats['views'] ?></p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card card-trust p-4 text-center h-100">
                         <p class="text-secondary small mb-1"><i class="bi bi-hdd me-1"></i>Storage</p>
-                        <p class="display-4 fw-bold tnum text-warning"><?= round(((int) $user['storage_used']) / 1048576, 2) ?> / <?= round(((int) $user['storage_quota']) / 1048576) ?> MB</p>
+                        <p class="display-4 fw-bold tnum text-warning" id="statStorage"><?= round(((int) $user['storage_used']) / 1048576, 2) ?> / <?= round(((int) $user['storage_quota']) / 1048576) ?> MB</p>
                     </div>
                 </div>
             </div>
@@ -163,7 +146,7 @@ require dirname(__DIR__) . '/includes/header.php';
                     <div class="card card-trust h-100">
                         <div class="card-body">
                             <h2 class="fw-semibold mb-3">Upload 7 hari terakhir</h2>
-                            <canvas id="ch" height="120"></canvas>
+                            <div class="chart-box"><canvas id="ch"></canvas></div>
                         </div>
                     </div>
                 </div>
@@ -171,7 +154,7 @@ require dirname(__DIR__) . '/includes/header.php';
                     <div class="card card-trust h-100">
                         <div class="card-body">
                             <h2 class="fw-semibold mb-3">Views 30 hari terakhir</h2>
-                            <canvas id="chv" height="120"></canvas>
+                            <div class="chart-box"><canvas id="chv"></canvas></div>
                         </div>
                     </div>
                 </div>
@@ -209,8 +192,21 @@ require dirname(__DIR__) . '/includes/header.php';
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Chart.js initialization
-    new Chart(document.getElementById('ch'), {
+    if (typeof Chart === 'undefined') {
+        document.getElementById('statsUpdated').textContent = 'Grafik gagal dimuat (CDN Chart.js tidak dapat diakses).';
+        return;
+    }
+    const chartOpts = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+            x: { grid: { display: false } }
+        }
+    };
+    // Chart.js initialization (data awal dari database saat render)
+    const chChart = new Chart(document.getElementById('ch'), {
         type: 'bar',
         data: {
             labels: <?= json_encode($chart_labels) ?>,
@@ -222,17 +218,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 borderRadius: 4,
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-                x: { grid: { display: false } }
-            }
-        }
+        options: chartOpts
     });
-    new Chart(document.getElementById('chv'), {
+    const chvChart = new Chart(document.getElementById('chv'), {
         type: 'line',
         data: {
             labels: <?= json_encode($views30_labels) ?>,
@@ -247,15 +235,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 pointHoverRadius: 5,
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-                x: { grid: { display: false } }
-            }
-        }
+        options: chartOpts
     });
+
+    // Refresh metrik realtime dari database (tanpa reload halaman)
+    async function refreshStats() {
+        try {
+            const res = await fetch('/dashboard/stats.php', { headers: { 'Accept': 'application/json' } });
+            if (!res.ok) return;
+            const j = await res.json();
+            if (!j.success) return;
+            const d = j.data;
+            document.getElementById('statTotal').textContent = Number(d.total).toLocaleString('en-US');
+            document.getElementById('statViews').textContent = Number(d.views).toLocaleString('en-US');
+            document.getElementById('statStorage').textContent = (d.storage_used / 1048576).toFixed(2) + ' / ' + Math.round(d.storage_quota / 1048576) + ' MB';
+            chChart.data.labels = d.uploads7.labels;
+            chChart.data.datasets[0].data = d.uploads7.data;
+            chChart.update();
+            chvChart.data.labels = d.views30.labels;
+            chvChart.data.datasets[0].data = d.views30.data;
+            chvChart.update();
+            document.getElementById('statsUpdated').textContent = 'Diperbarui ' + new Date().toLocaleTimeString('id-ID');
+        } catch (e) { /* diam: data terakhir tetap tampil */ }
+    }
+    document.getElementById('refreshStats').addEventListener('click', refreshStats);
+    setInterval(refreshStats, 60000);
 });
 </script>

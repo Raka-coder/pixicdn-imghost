@@ -13,8 +13,9 @@ declare(strict_types=1);
 $is_auth_page = $is_auth_page ?? false;
 $is_public_page = $is_public_page ?? false;
 $confirm_modal = $confirm_modal ?? false;
+$is_dashboard = $is_dashboard ?? false;
 ?>
-<?php if (!$is_auth_page && !$is_public_page): ?>
+<?php if (!$is_auth_page && !$is_public_page && !$is_dashboard): ?>
 <!-- Footer Dashboard -->
 <footer class="bg-white border-top border-2 border-primary mt-auto">
     <div class="container-fluid px-4 py-3">
@@ -67,9 +68,9 @@ $confirm_modal = $confirm_modal ?? false;
 <!-- Bootstrap 5.3.3 JS Bundle via jsDelivr -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
-<!-- Chart.js (untuk dashboard) -->
+<!-- Chart.js 4.x UMD (tanpa integrity: hash harus dari rilis resmi, salah hash = script diblokir) -->
 <?php if (isset($load_chartjs) && $load_chartjs): ?>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-7dpwGm5h9T5tW3U8ZM5/8bKpY7R8Z9Q2V3X4Y5Z6A7B8C9D0E1F2G3H4I5J6" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <?php endif; ?>
 
 <script>
