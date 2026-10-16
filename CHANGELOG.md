@@ -11,10 +11,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `.env.example` template (works via native `getenv()`, no extra dependency).
 - `SETUP.md` manual installation guide (Indonesian).
 - `SECURITY.md` security policy (English).
+- Gallery image preview modal (metadata, copy buttons, detail link) and
+  in-place rename (`rename.php`: S3 copy, URL auto-updates, flash messages).
+- Realtime dashboard metrics: `get_dashboard_stats()` helper plus
+  `dashboard/stats.php` JSON endpoint (session-guarded, rate-limited) with
+  60-second auto-refresh, manual refresh button, and load-failure warning.
+- Generic confirm modal for destructive actions (delete, remove, revoke);
+  delete/rename action group on gallery cards.
+- Landing page Bootstrap tabs demo, API response modal, toast-on-copy,
+  and mobile offcanvas navigation.
+- Auth UI polish: centered cards, logo + home link, password-strength meter,
+  show/hide password toggle, inline validation with error focus.
+- `format_bytes()` / `format_tanggal_id()` helpers; `MAX_IMAGE_PIXELS`
+  decompression-bomb guard (25 MP); `s3_copy()` / `s3_download()` helpers.
+
+### Changed
+- Full UI migration from Tailwind CDN to Bootstrap 5.3 (Trust Blue theme
+  now lives in `includes/header.php`; `assets/app.css` removed).
+- Reusable `header` / `sidebar` / `footer` includes with offcanvas mobile nav,
+  global tooltips, flash-to-toast redirects, and skip-to-content link.
+- `render_breadcrumbs()` no longer renders a back button (breadcrumb only).
+- Uniform 8px button radius; smaller contextual landing icons.
+- Upload flow hardened: file input reset, invalid files excluded from queue,
+  preview clicks no longer reopen the file dialog.
 
 ### Fixed
 - S3 `Content-Type` for inline preview (`inline` disposition, 1-year cache).
 - Config loading conflict (`const` vs `define`): `config.php` first, guarded example as dev-fill.
+- Restored missing `xhr.open()` in upload (stuck "loading terus").
+- Removed bogus Chart.js SRI hash that blocked chart loading; chart canvases
+  wrapped in fixed-height containers.
+
+### Security
+- Login/reset timing-attack resistance (constant-time dummy bcrypt verify).
+- Strict upload MIME match (extension must equal sniffed content).
+- `Secure` session cookies honored behind TLS-terminating proxies
+  (`X-Forwarded-Proto`).
+- Rename endpoint: CSRF + ownership + filename whitelist + global uniqueness,
+  best-effort S3/DB rollback.
 
 ## [1.0.0] - 2026-10-11
 

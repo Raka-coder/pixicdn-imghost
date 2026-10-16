@@ -22,7 +22,6 @@ start_secure_session();
 $token = csrfToken();
 $active = 'upload';
 $crumbs = [['label' => 'Dashboard', 'url' => '/dashboard/'], ['label' => 'Upload']];
-$back_url = '/dashboard/';
 ?>
 <?php
 $page_title = 'Upload — PixiCDN';
@@ -37,27 +36,8 @@ require __DIR__ . '/includes/header.php';
         </aside>
 
         <!-- Main Content -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
-            <!-- Breadcrumb + Back Button -->
-            <nav aria-label="Breadcrumb" class="mb-4">
-                <div class="d-flex align-items-center flex-wrap gap-2">
-                    <?php if ($back_url !== null): ?>
-                        <a href="<?= sanitize($back_url) ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
-                    <?php endif; ?>
-                    <ol class="breadcrumb mb-0 flex-wrap">
-                        <?php foreach ($crumbs as $i => $c): ?>
-                            <?php if ($i > 0): ?>
-                                <li class="breadcrumb-item"><i class="bi bi-chevron-right text-secondary"></i></li>
-                            <?php endif; ?>
-                            <?php if (isset($c['url'])): ?>
-                                <li class="breadcrumb-item"><a href="<?= sanitize($c['url']) ?>" class="text-decoration-none text-secondary"><?= sanitize($c['label']) ?></a></li>
-                            <?php else: ?>
-                                <li class="breadcrumb-item active fw-semibold text-body-emphasis" aria-current="page"><?= sanitize($c['label']) ?></li>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </ol>
-                </div>
-            </nav>
+        <main id="main-content" class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
+            <?php render_breadcrumbs($crumbs); ?>
 
             <h1 class="page-title mb-1">Upload Gambar</h1>
             <p class="text-secondary mb-4">JPG, PNG, GIF, WebP · maks 5 MB/file · maks 5 file</p>

@@ -94,8 +94,10 @@ require dirname(__DIR__) . '/includes/header.php';
         <?php if (!$items): ?>
             <!-- Empty State -->
             <div class="card card-trust text-center py-5">
-                <div class="d-inline-flex align-items-center justify-content-center bg-secondary-subtle text-secondary rounded-circle mb-3 icon-box-lg">
-                    <i class="bi bi-folder fs-1"></i>
+                <div class="d-flex justify-content-center">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-secondary-subtle text-secondary rounded-circle mb-3 icon-box-lg">
+                        <i class="bi bi-folder fs-1"></i>
+                    </div>
                 </div>
                 <h3 class="fw-semibold mb-2">Album ini kosong</h3>
                 <p class="text-secondary mb-0">Belum ada gambar di album ini.</p>

@@ -23,7 +23,6 @@ require_login();
 $user = current_user();
 $active = 'dashboard';
 $crumbs = [['label' => 'Dashboard']];
-$back_url = null;
 $load_chartjs = true;
 
 // Satu sumber metrik dari database (bukan dummy). Gagal DB → flag error,
@@ -59,7 +58,7 @@ require dirname(__DIR__) . '/includes/header.php';
         <!-- Main Content -->
         <main id="main-content" class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
             <!-- Breadcrumb + Back Button -->
-            <?php render_breadcrumbs($crumbs, $back_url); ?>
+            <?php render_breadcrumbs($crumbs); ?>
 
             <h1 class="page-title mb-2">Halo, <?= sanitize($user['username']) ?></h1>
             <div class="d-flex align-items-center gap-2 mb-4">

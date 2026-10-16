@@ -73,6 +73,53 @@ function s3_put(string $local_path, string $s3_key): bool
 }
 
 /**
+ * Unduh object dari bucket ke file lokal.
+ *
+ * @param string $s3_key Key di bucket
+ * @param string $local_path Path file lokal tujuan
+ * @return bool True jika sukses
+ */
+function s3_download(string $s3_key, string $local_path): bool
+{
+    try {
+        getS3Client()->getObject([
+            'Bucket' => S3_BUCKET,
+            'Key' => $s3_key,
+            'SaveAs' => $local_path,
+        ]);
+        return true;
+    } catch (S3Exception $e) {
+        error_log('S3 download gagal: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Salin object dalam bucket yang sama.
+ *
+ * @param string $src_key Key sumber
+ * @param string $dst_key Key tujuan
+ * @return bool True jika sukses
+ */
+function s3_copy(string $src_key, string $dst_key): bool
+{
+    try {
+        $enc = static function (string $key): string {
+            return implode('/', array_map('rawurlencode', explode('/', $key)));
+        };
+        getS3Client()->copyObject([
+            'Bucket' => S3_BUCKET,
+            'CopySource' => $enc((string) S3_BUCKET) . '/' . $enc($src_key),
+            'Key' => $dst_key,
+        ]);
+        return true;
+    } catch (S3Exception $e) {
+        error_log('S3 copy gagal: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
  * Hapus object dari bucket.
  *
  * @param string $s3_key Key di bucket

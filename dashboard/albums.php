@@ -42,7 +42,6 @@ $stmt->execute([(int) $user['id']]);
 $albums = $stmt->fetchAll();
 $active = 'album';
 $crumbs = [['label' => 'Dashboard', 'url' => '/dashboard/'], ['label' => 'Album']];
-$back_url = null;
 $is_dashboard = true;
 ?>
 <?php
@@ -60,7 +59,7 @@ require dirname(__DIR__) . '/includes/header.php';
         <!-- Main Content -->
         <main id="main-content" class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
             <!-- Breadcrumb + Back Button -->
-            <?php render_breadcrumbs($crumbs, $back_url); ?>
+            <?php render_breadcrumbs($crumbs); ?>
 
             <h1 class="page-title mb-4">Album Saya</h1>
 
@@ -118,8 +117,10 @@ require dirname(__DIR__) . '/includes/header.php';
             <?php else: ?>
                 <!-- Empty State -->
                 <div class="card card-trust text-center py-5">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-secondary-subtle text-secondary rounded-circle mb-3 icon-box-lg">
-                        <i class="bi bi-folder fs-1"></i>
+                    <div class="d-flex justify-content-center">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-secondary-subtle text-secondary rounded-circle mb-3 icon-box-lg">
+                            <i class="bi bi-folder fs-1"></i>
+                        </div>
                     </div>
                     <h3 class="fw-semibold mb-2">Belum ada album</h3>
                     <p class="text-secondary mb-4">Buat album pertama Anda menggunakan form di atas.</p>

@@ -12,8 +12,8 @@ Self-hosted image hosting with permanent direct links. Upload images, get embedd
 ## Features
 
 - **Upload & share** — up to 5 files per batch, 5 MB each (JPG/PNG/GIF/WebP, strict content sniffing, 25 MP decompression-bomb guard); Direct, BBCode, and HTML links with one-click copy; 300px thumbnails; optional auto-expiry.
-- **Organize** — personal gallery with filter/sort/pagination, albums with public share links, spam-resistant view counter.
-- **Accounts** — registration with one-time recovery code (no email needed), login/logout, password reset, profile, analytics dashboard.
+- **Organize** — personal gallery with filter/sort/pagination, click-to-preview modal (metadata + copy + detail link), in-place rename (S3 copy, URL auto-updates), albums with public share links, spam-resistant view counter.
+- **Accounts** — registration with one-time recovery code (no email needed), login/logout, password reset, profile, realtime analytics dashboard (auto-refresh metrics + Chart.js).
 - **Developer** — REST API authenticated via `X-API-Key`, one-time-display API keys, `/health.php` monitoring endpoint.
 - **Interface** — Bootstrap 5.3 UI with Trust Blue theme (no build step): reusable header/sidebar/footer, breadcrumbs, confirm modals for destructive actions, toast notifications, tabs, tooltips, offcanvas mobile nav, inline form validation with error focus, password-strength meter.
 - **Security** — login timing-attack resistant (constant-time dummy bcrypt verify), generic auth errors, IP rate limiting, CSRF on all forms, `Secure` session cookies behind TLS-terminating proxies, ownership checks with 404-masking on every object route.
@@ -108,7 +108,7 @@ Point `S3_ENDPOINT`, `S3_KEY`, and `S3_SECRET` in `config.php` at it. Without st
 
 ## Usage
 
-**Web flow:** `/auth/register.php` (save the recovery code!) → `/upload.php` → copy a link format → `/gallery.php` → `/image.php?f=name.jpg` → `/dashboard/albums.php`.
+**Web flow:** `/auth/register.php` (save the recovery code!) → `/upload.php` → copy a link format → `/gallery.php` (preview modal, rename via `/rename.php`) → `/image.php?f=name.jpg` → `/dashboard/albums.php`.
 
 **REST API** (header `X-API-Key` required):
 
@@ -124,11 +124,11 @@ curl -X DELETE -H "X-API-Key: <key>" "http://localhost:8000/api/delete.php?id=12
 ```
 pixicdn/
 ├── index.php  gallery.php  image.php  album.php
-├── upload.php upload_handler.php  delete.php  health.php
+├── upload.php upload_handler.php  delete.php  rename.php  health.php
 ├── auth/        # register, login, logout, profile, password reset
-├── dashboard/   # stats, albums, api-key
+├── dashboard/   # index (realtime), stats (JSON), albums, album, api-key
 ├── api/         # upload, images, delete, me (JSON)
-├── includes/    # db, auth, upload, s3, api, thumbnail, album, helpers
+├── includes/    # db, auth, upload, s3, api, thumbnail, album, helpers, dashboard
 │               # + header, sidebar, footer (Bootstrap 5.3 UI shell & theme)
 ├── cron/        # cleanup.php (expiry, purge, log retention)
 ├── migrations/ # 001 schema, 002 test seed
@@ -156,6 +156,7 @@ Production runs on Proxmox LXC: Server 2 serves the app (Caddy + PHP-FPM via Qua
 |:---|:---|:---|
 | "Response tidak valid" on upload | PHP fatal (memory/GD), not JSON | `memory_limit=512M`, GD with JPEG support |
 | "Dimensi gambar terlalu besar" on upload | Image exceeds `MAX_IMAGE_PIXELS` (decompression-bomb guard) | Downscale below 25 MP or raise the limit |
+| Rename rejected (`?rename_error=…`) | `invalid` bad characters, `taken` name in use, `extension` changed extension, `notfound`/`failed` | Keep the same extension, pick an unused name, retry |
 | Images auto-download | Missing `ContentType` on old uploads | Re-upload (new uploads set `inline`) |
 | Logged out unexpectedly | `tmp-sessions/` not writable | Create it, writable by PHP-FPM |
 | 500 with no detail | `config.php` missing values / DB down | Check logs, then `/health.php` |

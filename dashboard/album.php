@@ -79,7 +79,6 @@ $crumbs = [
     ['label' => 'Album', 'url' => '/dashboard/albums.php'],
     ['label' => $album['name']],
 ];
-$back_url = null; // HAPUS tombol kembali manual — breadcrumbs + sidebar sudah mewakili
 $confirm_modal = true;
 $is_dashboard = true;
 ?>
@@ -98,7 +97,7 @@ require dirname(__DIR__) . '/includes/header.php';
         <!-- Main Content -->
         <main id="main-content" class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
             <!-- Breadcrumb (hierarchy: Dashboard > Album > [Nama Album]) -->
-            <?php render_breadcrumbs($crumbs, $back_url); ?>
+            <?php render_breadcrumbs($crumbs); ?>
 
             <h1 class="page-title mb-2"><?= sanitize($album['name']) ?></h1>
             <p class="text-secondary small mb-4"><?= (int) $album['image_count'] ?> gambar · <?= $album['is_public'] ? 'publik' : 'privat' ?></p>
@@ -187,8 +186,10 @@ require dirname(__DIR__) . '/includes/header.php';
                 </div>
             <?php else: ?>
                 <div class="card card-trust text-center py-5 mb-4">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-secondary-subtle text-secondary rounded-circle mb-3 icon-box-lg">
-                        <i class="bi bi-image fs-1"></i>
+                    <div class="d-flex justify-content-center">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-secondary-subtle text-secondary rounded-circle mb-3 icon-box-lg">
+                            <i class="bi bi-image fs-1"></i>
+                        </div>
                     </div>
                     <h3 class="fw-semibold mb-2">Album ini kosong</h3>
                     <p class="text-secondary mb-3">Tambahkan gambar pertama menggunakan form di atas.</p>
@@ -214,9 +215,6 @@ require dirname(__DIR__) . '/includes/header.php';
                 </div>
             </div>
 
-            <div class="mt-3 text-center">
-                <a href="/dashboard/albums.php" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Semua album</a>
-            </div>
         </main>
     </div>
 </div>

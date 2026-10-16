@@ -167,6 +167,39 @@ function generate_filename(string $extension): string
 }
 
 /**
+ * Format byte ke human-readable (KB/MB).
+ *
+ * @param int $bytes Jumlah byte
+ * @return string Mis. "800 KB", "2.5 MB"
+ */
+function format_bytes(int $bytes): string
+{
+    if ($bytes < 1024) {
+        return $bytes . ' B';
+    }
+    if ($bytes < 1048576) {
+        return round($bytes / 1024, 1) . ' KB';
+    }
+    return round($bytes / 1048576, 2) . ' MB';
+}
+
+/**
+ * Format tanggal Indonesia singkat (16 Okt 2026).
+ *
+ * @param string $datetime Datetime DB
+ * @return string Tanggal terformat
+ */
+function format_tanggal_id(string $datetime): string
+{
+    $ts = strtotime($datetime);
+    if ($ts === false) {
+        return $datetime;
+    }
+    static $bulan = ['Jan' => 'Jan', 'Feb' => 'Feb', 'Mar' => 'Mar', 'Apr' => 'Apr', 'May' => 'Mei', 'Jun' => 'Jun', 'Jul' => 'Jul', 'Aug' => 'Agu', 'Sep' => 'Sep', 'Oct' => 'Okt', 'Nov' => 'Nov', 'Dec' => 'Des'];
+    return date('d', $ts) . ' ' . ($bulan[date('M', $ts)] ?? date('M', $ts)) . ' ' . date('Y', $ts);
+}
+
+/**
  * Render blok navigasi atas halaman internal: tombol kembali (opsional)
  * + breadcrumb Bootstrap. Item terakhir = halaman aktif (tanpa URL).
  * Aturan: halaman album TIDAK pakai $back_url (breadcrumb + sidebar cukup).
@@ -175,12 +208,9 @@ function generate_filename(string $extension): string
  * @param string|null $back_url URL tombol kembali atau null
  * @return void Langsung echo HTML
  */
-function render_breadcrumbs(array $crumbs, ?string $back_url = null): void
+function render_breadcrumbs(array $crumbs): void
 {
-    echo '<nav aria-label="Breadcrumb" class="mb-4"><div class="d-flex align-items-center flex-wrap gap-2">';
-    if ($back_url !== null) {
-        echo '<a href="' . sanitize($back_url) . '" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>';
-    }
+    echo '<nav aria-label="Breadcrumb" class="mb-4">';
     echo '<ol class="breadcrumb mb-0 flex-wrap">';
     foreach ($crumbs as $i => $c) {
         if ($i > 0) {
@@ -192,5 +222,5 @@ function render_breadcrumbs(array $crumbs, ?string $back_url = null): void
             echo '<li class="breadcrumb-item active fw-semibold text-body-emphasis" aria-current="page">' . sanitize($c['label']) . '</li>';
         }
     }
-    echo '</ol></div></nav>';
+    echo '</ol></nav>';
 }

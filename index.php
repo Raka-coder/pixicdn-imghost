@@ -88,21 +88,21 @@ require __DIR__ . '/includes/header.php';
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="pane-direct" role="tabpanel" aria-labelledby="tab-direct" tabindex="0">
                             <div class="bg-body-tertiary border rounded-3 p-3 text-break mono small mb-2">https://pixicdn.erdtreeproject.my.id/abc123.jpg</div>
-                            <button type="button" class="btn btn-sm btn-outline-primary w-100" data-copy-target="linkDirect" data-copy-toast="1" data-bs-toggle="tooltip" data-bs-title="Salin ke clipboard"><i class="bi bi-clipboard me-1"></i>Salin link Direct</button>
+                            <button type="button" class="btn btn-outline-primary btn-ghost w-100" data-copy-target="linkDirect" data-copy-toast="1" data-bs-toggle="tooltip" data-bs-title="Salin ke clipboard"><i class="bi bi-clipboard me-1"></i>Salin link Direct</button>
                         </div>
                         <div class="tab-pane fade" id="pane-bbcode" role="tabpanel" aria-labelledby="tab-bbcode" tabindex="0">
                             <div class="bg-body-tertiary border rounded-3 p-3 text-break mono small mb-2">[img]https://pixicdn.erdtreeproject.my.id/abc123.jpg[/img]</div>
-                            <button type="button" class="btn btn-sm btn-outline-primary w-100" data-copy-target="linkBBCode" data-copy-toast="1" data-bs-toggle="tooltip" data-bs-title="Salin ke clipboard"><i class="bi bi-clipboard me-1"></i>Salin BBCode</button>
+                            <button type="button" class="btn btn-outline-primary btn-ghost w-100" data-copy-target="linkBBCode" data-copy-toast="1" data-bs-toggle="tooltip" data-bs-title="Salin ke clipboard"><i class="bi bi-clipboard me-1"></i>Salin BBCode</button>
                         </div>
                         <div class="tab-pane fade" id="pane-html" role="tabpanel" aria-labelledby="tab-html" tabindex="0">
                             <div class="bg-body-tertiary border rounded-3 p-3 text-break mono small mb-2">&lt;img src="https://pixicdn.erdtreeproject.my.id/abc123.jpg"&gt;</div>
-                            <button type="button" class="btn btn-sm btn-outline-primary w-100" data-copy-target="linkHTML" data-copy-toast="1" data-bs-toggle="tooltip" data-bs-title="Salin ke clipboard"><i class="bi bi-clipboard me-1"></i>Salin HTML</button>
+                            <button type="button" class="btn btn-outline-primary btn-ghost w-100" data-copy-target="linkHTML" data-copy-toast="1" data-bs-toggle="tooltip" data-bs-title="Salin ke clipboard"><i class="bi bi-clipboard me-1"></i>Salin HTML</button>
                         </div>
                     </div>
                     <input type="hidden" id="linkDirect" value="https://pixicdn.erdtreeproject.my.id/abc123.jpg">
                     <input type="hidden" id="linkBBCode" value="[img]https://pixicdn.erdtreeproject.my.id/abc123.jpg[/img]">
                     <input type="hidden" id="linkHTML" value='<img src="https://pixicdn.erdtreeproject.my.id/abc123.jpg">'>
-                    <a href="/auth/register.php" class="btn btn-primary mt-4 w-100">Coba langsung — daftar dulu</a>
+                    <a href="/auth/register.php" class="btn btn-primary mt-2 w-100">Coba langsung — daftar dulu</a>
                 </div>
             </div>
         </div>
@@ -315,8 +315,8 @@ require __DIR__ . '/includes/header.php';
             <h2 class="fw-bold section-title">Mulai hosting gambar Anda hari ini</h2>
             <p class="mt-2 text-white text-opacity-75">Gratis, tanpa kartu kredit, tanpa iklan.</p>
             <div class="mt-4 d-flex flex-wrap justify-content-center gap-3">
-                <a href="/auth/register.php" class="btn btn-gold btn-lg px-4">Upload pertama</a>
-                <a href="/gallery.php" class="btn btn-outline-light btn-lg px-4">Lihat gallery</a>
+                <a href="/auth/register.php" class="btn btn-gold px-4">Upload pertama</a>
+                <a href="/gallery.php" class="btn btn-outline-light px-4">Lihat gallery</a>
             </div>
         </div>
     </section>

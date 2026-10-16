@@ -24,7 +24,6 @@ $msg = '';
 $err = '';
 $active = 'profile';
 $crumbs = [['label' => 'Dashboard', 'url' => '/dashboard/'], ['label' => 'Profil']];
-$back_url = '/dashboard/';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrf($_POST['csrf_token'] ?? '')) {
@@ -86,7 +85,7 @@ require dirname(__DIR__) . '/includes/header.php';
         <!-- Main Content -->
         <main id="main-content" class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
             <!-- Breadcrumb + Back Button -->
-            <?php render_breadcrumbs($crumbs, $back_url); ?>
+            <?php render_breadcrumbs($crumbs); ?>
 
             <h1 class="page-title mb-4">Profil</h1>
 

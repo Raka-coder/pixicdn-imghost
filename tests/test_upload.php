@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 require_once dirname(__DIR__) . '/config.example.php';
+require_once dirname(__DIR__) . '/includes/helpers.php';
 require_once dirname(__DIR__) . '/includes/upload.php';
 
 $failures = 0;
@@ -61,6 +62,22 @@ check('dimensi mungil lolos', validate_image_file($tiny) === null);
 @unlink($tmp_tiny);
 
 check('batas piksel terdefinisi', defined('MAX_IMAGE_PIXELS') && MAX_IMAGE_PIXELS === 25000000);
+
+check('rename valid', validate_rename_filename('foto-liburan-2026.jpg', 'jpg') === null);
+check('rename kosong ditolak', validate_rename_filename('   ', 'jpg') === 'empty');
+check('rename simbol ditolak', validate_rename_filename('a;b.jpg', 'jpg') === 'charset');
+check('rename spasi ditolak', validate_rename_filename('a b.jpg', 'jpg') === 'charset');
+check('rename ganti ekstensi ditolak', validate_rename_filename('foto.png', 'jpg') === 'extension');
+check('rename tanpa ekstensi ditolak', validate_rename_filename('foto', 'jpg') === 'extension');
+check('rename dotfile ditolak', validate_rename_filename('.htaccess', 'jpg') === 'dotfile');
+check('rename titik leading ditolak', validate_rename_filename('.foto.jpg', 'jpg') === 'dotfile');
+check('rename terlalu panjang ditolak', validate_rename_filename(str_repeat('a', 252) . '.jpg', 'jpg') === 'length');
+check('rename ekstensi case-insensitive', validate_rename_filename('FOTO.JPG', 'jpg') === null);
+
+check('format byte', format_bytes(512) === '512 B');
+check('format KB', format_bytes(2048) === '2 KB');
+check('format MB', format_bytes(2621440) === '2.5 MB');
+check('format tanggal id', format_tanggal_id('2026-10-16 10:00:00') === '16 Okt 2026');
 
 $key = build_s3_key('20261010_abc123.jpg');
 check('s3 key prefix', str_starts_with($key, 'uploads/' . date('Y') . '/'));

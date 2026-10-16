@@ -162,6 +162,9 @@ aside .nav-link:not(.active):hover,
 /* Max-height utility for modal preview */
 .mh-70 { max-height: 70vh; }
 
+/* Preview image di modal gallery */
+.preview-img { max-height: 400px; object-fit: contain; }
+
 /* Image zoom on hover (pengganti onmouseover inline) */
 .zoom-hover { transform: scale(1); transition: transform 0.2s ease; }
 .zoom-hover:hover { transform: scale(1.05); }

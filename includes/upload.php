@@ -23,6 +23,35 @@ const UPLOAD_MIME_MAP = [
 ];
 
 /**
+ * Validasi nama file baru untuk rename: charset + ekstensi sama + basename layak.
+ *
+ * @param string $new Nama file baru dari user
+ * @param string $old_ext Ekstensi file lama (tanpa titik)
+ * @return string|null Null jika valid, kode error jika tidak
+ */
+function validate_rename_filename(string $new, string $old_ext): ?string
+{
+    $new = trim($new);
+    if ($new === '') {
+        return 'empty';
+    }
+    if (mb_strlen($new) > 255) {
+        return 'length';
+    }
+    if (!preg_match('/^[a-zA-Z0-9_\-\.]+$/', $new)) {
+        return 'charset';
+    }
+    if (str_starts_with(basename($new), '.')) {
+        return 'dotfile';
+    }
+    $ext = strtolower(pathinfo($new, PATHINFO_EXTENSION));
+    if ($ext !== strtolower($old_ext)) {
+        return 'extension';
+    }
+    return null;
+}
+
+/**
  * Validasi file upload (ext + error + size). MIME final dicek via getimagesize/finfo saat handle.
  *
  * @param array<string, mixed> $file Entri $_FILES

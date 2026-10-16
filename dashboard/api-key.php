@@ -53,9 +53,7 @@ $has_key = !empty($row['api_key']);
 $masked = $has_key ? '••••••••' . substr((string) $row['api_key'], -6) : '';
 $active = 'api-key';
 $crumbs = [['label' => 'Dashboard', 'url' => '/dashboard/'], ['label' => 'API Key']];
-$back_url = null;
 $confirm_modal = true;
-$is_dashboard = true;
 ?>
 <?php
 $page_title = 'API Key — PixiCDN';
@@ -72,7 +70,7 @@ require dirname(__DIR__) . '/includes/header.php';
         <!-- Main Content -->
         <main id="main-content" class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
             <!-- Breadcrumb -->
-            <?php render_breadcrumbs($crumbs, $back_url); ?>
+            <?php render_breadcrumbs($crumbs); ?>
 
             <h1 class="page-title mb-4">API Key</h1>
             <p class="text-secondary small mb-4">Pakai di header <code class="mono small bg-body-tertiary border rounded px-2 py-1">X-API-Key</code>. Key hanya ditampilkan sekali setelah generate.</p>
