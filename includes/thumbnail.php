@@ -100,5 +100,5 @@ function upload_thumbnail(string $src_tmp, string $filename): ?string
     if (!$ok) {
         return null;
     }
-    return rtrim(APP_URL, '/') . '/' . $thumb_name;
+    return rtrim(S3_PUBLIC_URL, '/') . '/' . ltrim($s3_key, '/');
 }

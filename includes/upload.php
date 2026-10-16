@@ -115,7 +115,7 @@ function handle_upload(array $file, ?int $user_id, string $ip, string $user_agen
     if (!s3_put($tmp, $s3_key)) {
         return ['ok' => false, 'error' => 'Gagal menyimpan ke storage. Coba lagi.'];
     }
-    $url = rtrim(APP_URL, '/') . '/' . $filename;
+    $url = rtrim(S3_PUBLIC_URL, '/') . '/' . ltrim($s3_key, '/');
     $thumb_url = upload_thumbnail($tmp, $filename);
     try {
         $id = save_image_record([
