@@ -221,6 +221,7 @@ go.addEventListener('click', () => {
     go.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Mengunggah...';
     
     const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/upload_handler.php', true);
     const startTime = Date.now();
     
     xhr.upload.onprogress = e => {
