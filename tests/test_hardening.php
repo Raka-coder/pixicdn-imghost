@@ -32,6 +32,24 @@ check('verify_login samakan waktu user-asing', str_contains($auth, 'password_ver
 check('reset samakan waktu user-asing', str_contains($auth, 'password_verify($recovery_code, DUMMY_PASSWORD_HASH)'));
 check('login regenerate session', str_contains($auth, 'session_regenerate_id(true)'));
 
+$stats_ep = is_file(dirname(__DIR__) . '/dashboard/stats.php') ? file_get_contents(dirname(__DIR__) . '/dashboard/stats.php') : '';
+check('endpoint stats ada', $stats_ep !== '');
+check('endpoint stats guard session (401, tanpa redirect login)', str_contains($stats_ep, 'current_user()') && str_contains($stats_ep, '401') && !str_contains($stats_ep, 'require_login()'));
+check('endpoint stats rate-limited', str_contains($stats_ep, 'check_rate_limit'));
+check('endpoint stats hanya GET', str_contains($stats_ep, "REQUEST_METHOD'] !== 'GET'"));
+
+$dash = is_file(dirname(__DIR__) . '/includes/dashboard.php') ? file_get_contents(dirname(__DIR__) . '/includes/dashboard.php') : '';
+check('helper metrik dashboard ada', str_contains($dash, 'function get_dashboard_stats'));
+
+$up = is_file(dirname(__DIR__) . '/upload.php') ? file_get_contents(dirname(__DIR__) . '/upload.php') : '';
+check('upload xhr.open ada sebelum send', str_contains($up, "xhr.open('POST', '/upload_handler.php'") && strpos($up, 'xhr.open') < strpos($up, 'xhr.send'));
+check('upload reset input file', str_contains($up, "input.value = ''"));
+check('upload cegah klik preview', str_contains($up, 'stopPropagation'));
+check('upload tolak file invalid dari antrean', str_contains($up, 'valid.push(f)'));
+
+$handler = is_file(dirname(__DIR__) . '/upload_handler.php') ? file_get_contents(dirname(__DIR__) . '/upload_handler.php') : '';
+check('handler kirim bbcode+html sesuai JS', str_contains($handler, "'bbcode'") && str_contains($handler, "'html'") && str_contains($up, 'd.bbcode') && str_contains($up, 'd.html'));
+
 $album = is_file(dirname(__DIR__) . '/album.php') ? file_get_contents(dirname(__DIR__) . '/album.php') : '';
 check('album publik ada', $album !== '');
 check('album pakai allow_public', str_contains($album, 'allow_public'));

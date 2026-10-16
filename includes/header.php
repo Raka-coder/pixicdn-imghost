@@ -94,6 +94,20 @@ $is_public_page = $is_public_page ?? false;
 aside .nav-link:not(.active):hover,
 .offcanvas-body .nav-link:not(.active):hover { background-color: #f5f7fa; }
 
+/* Ghost button (outline) — no color change on hover, for navbar */
+.btn-ghost {
+    --bs-btn-color: var(--bs-primary);
+    --bs-btn-border-color: var(--bs-primary);
+    --bs-btn-hover-bg: transparent;
+    --bs-btn-hover-border-color: var(--bs-primary);
+    --bs-btn-hover-color: var(--bs-primary);
+    --bs-btn-active-bg: var(--bs-primary-bg-subtle);
+    --bs-btn-active-border-color: var(--bs-primary);
+    --bs-btn-active-color: var(--bs-primary);
+    --bs-btn-disabled-color: var(--bs-primary);
+    --bs-btn-disabled-border-color: var(--bs-primary);
+}
+
 /* Custom button variants */
 .btn-gold {
     --bs-btn-color: #1a1a2e;
@@ -155,6 +169,7 @@ aside .nav-link:not(.active):hover,
 /* Drop zone upload */
 .dropzone { cursor: pointer; transition: all 0.2s ease; }
 .dropzone:hover, .dropzone.drag-active { border-color: var(--bs-primary); background-color: var(--bs-primary-bg-subtle); }
+.dropzone.drag-active { transform: scale(1.01); box-shadow: 0 0 0 3px rgba(0, 48, 135, 0.15); }
 
 /* Fixed-size icon boxes (pengganti inline width/height) */
 .icon-box { width: 48px; height: 48px; flex-shrink: 0; }
@@ -198,6 +213,10 @@ aside .nav-link:not(.active):hover,
 
 /* Preview thumbnail upload */
 .thumb-preview { height: 96px; object-fit: cover; }
+
+/* Chart container: tinggi pasti agar canvas Chart.js tidak kolaps */
+.chart-box { position: relative; height: 260px; }
+@media (max-width: 576px) { .chart-box { height: 220px; } }
 
 /* Nav spacer (mobile topbar balance) */
 .nav-spacer { width: 42px; flex-shrink: 0; }

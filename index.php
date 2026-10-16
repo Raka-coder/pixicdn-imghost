@@ -50,8 +50,8 @@ require __DIR__ . '/includes/header.php';
                     <li class="nav-item"><a href="/gallery.php" class="nav-link text-secondary fw-medium small nav-landing">Gallery</a></li>
                 </ul>
                 <div class="d-flex align-items-center gap-2">
-                    <a href="/auth/login.php" class="btn btn-outline-primary btn-sm">Masuk</a>
-                    <a href="/auth/register.php" class="btn btn-primary btn-sm">Upload gratis</a>
+                    <a href="/auth/login.php" class="btn btn-outline-primary btn-ghost">Masuk</a>
+                    <a href="/auth/register.php" class="btn btn-primary">Upload gratis</a>
                 </div>
             </div>
         </nav>

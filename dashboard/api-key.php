@@ -55,6 +55,7 @@ $active = 'api-key';
 $crumbs = [['label' => 'Dashboard', 'url' => '/dashboard/'], ['label' => 'API Key']];
 $back_url = null;
 $confirm_modal = true;
+$is_dashboard = true;
 ?>
 <?php
 $page_title = 'API Key — PixiCDN';
