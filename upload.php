@@ -26,20 +26,38 @@ $back_url = '/dashboard/';
 ?>
 <?php
 $page_title = 'Upload — PixiCDN';
-require dirname(__DIR__) . '/includes/header.php';
+require __DIR__ . '/includes/header.php';
 ?>
 
 <div class="container-fluid">
     <div class="row g-0">
         <!-- Sidebar Desktop -->
         <aside class="col-md-3 col-lg-2 d-none d-md-block bg-white border-end border-2 border-primary min-vh-100 position-sticky top-0 sidebar-desktop">
-            <?php require dirname(__DIR__) . '/includes/sidebar.php'; ?>
+            <?php require __DIR__ . '/includes/sidebar.php'; ?>
         </aside>
 
         <!-- Main Content -->
-        <main id="main-content" class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-4 py-5">
             <!-- Breadcrumb + Back Button -->
-            <?php render_breadcrumbs($crumbs, $back_url); ?>
+            <nav aria-label="Breadcrumb" class="mb-4">
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <?php if ($back_url !== null): ?>
+                        <a href="<?= sanitize($back_url) ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
+                    <?php endif; ?>
+                    <ol class="breadcrumb mb-0 flex-wrap">
+                        <?php foreach ($crumbs as $i => $c): ?>
+                            <?php if ($i > 0): ?>
+                                <li class="breadcrumb-item"><i class="bi bi-chevron-right text-secondary"></i></li>
+                            <?php endif; ?>
+                            <?php if (isset($c['url'])): ?>
+                                <li class="breadcrumb-item"><a href="<?= sanitize($c['url']) ?>" class="text-decoration-none text-secondary"><?= sanitize($c['label']) ?></a></li>
+                            <?php else: ?>
+                                <li class="breadcrumb-item active fw-semibold text-body-emphasis" aria-current="page"><?= sanitize($c['label']) ?></li>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </ol>
+                </div>
+            </nav>
 
             <h1 class="page-title mb-1">Upload Gambar</h1>
             <p class="text-secondary mb-4">JPG, PNG, GIF, WebP · maks 5 MB/file · maks 5 file</p>
@@ -65,9 +83,9 @@ require dirname(__DIR__) . '/includes/header.php';
 
             <button id="go" class="btn btn-primary w-100 mt-3" disabled><i class="bi bi-cloud-arrow-up me-1"></i>Upload</button>
 
-            <div class="mt-3 d-flex align-items-center gap-2">
-                <label for="exp" class="form-label small text-secondary mb-0">Hapus otomatis</label>
-                <select id="exp" class="form-select form-select-sm w-auto" aria-label="Hapus otomatis setelah">
+            <div class="mt-3">
+                <label class="form-label small text-secondary">Hapus otomatis</label>
+                <select id="exp" class="form-select form-select-sm w-auto d-inline-block" aria-label="Expiry">
                     <option value="never">Tidak pernah</option>
                     <option value="1h">1 jam</option>
                     <option value="1d">1 hari</option>
@@ -85,7 +103,46 @@ require dirname(__DIR__) . '/includes/header.php';
     </div>
 </div>
 
-<?php require dirname(__DIR__) . '/includes/footer.php'; ?>
+<!-- Upload Result Modal -->
+<div class="modal fade" id="uploadResultModal" tabindex="-1" aria-labelledby="uploadResultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold" id="uploadResultModalLabel"><i class="bi bi-check-circle-fill text-success me-2"></i>Upload Berhasil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body py-4" id="uploadResultBody"></div>
+            <div class="modal-footer border-top-0 pt-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <a href="/gallery.php" class="btn btn-primary">Ke Gallery</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold" id="deleteModalLabel"><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Konfirmasi Hapus</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body py-4">
+                <p class="mb-0">Apakah Anda yakin ingin menghapus gambar ini? Tindakan ini tidak bisa dibatalkan.</p>
+            </div>
+            <div class="modal-footer border-top-0 pt-0">
+                <form id="deleteConfirmForm" method="post">
+                    <input type="hidden" name="csrf_token" value="<?= sanitize(csrfToken()) ?>">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">Hapus</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php require __DIR__ . '/includes/footer.php'; ?>
 
 <script>
 const drop = document.getElementById('drop');
@@ -153,7 +210,6 @@ go.addEventListener('click', () => {
     go.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Mengunggah...';
     
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/upload_handler.php', true);
     const startTime = Date.now();
     
     xhr.upload.onprogress = e => {
@@ -200,7 +256,6 @@ go.addEventListener('click', () => {
         files = [];
         prev.innerHTML = '';
         bar.style.width = '0%';
-        if (typeof refreshTooltips === 'function') refreshTooltips(result);
     };
     
     xhr.onerror = () => {

@@ -60,14 +60,14 @@ $confirm_modal = true;
 ?>
 <?php
 $page_title = 'Gallery — PixiCDN';
-require dirname(__DIR__) . '/includes/header.php';
+require __DIR__ . '/includes/header.php';
 ?>
 
 <div class="container-fluid">
     <div class="row g-0">
         <!-- Sidebar Desktop -->
         <aside class="col-md-3 col-lg-2 d-none d-md-block bg-white border-end border-2 border-primary min-vh-100 position-sticky top-0 sidebar-desktop">
-            <?php require dirname(__DIR__) . '/includes/sidebar.php'; ?>
+            <?php require __DIR__ . '/includes/sidebar.php'; ?>
         </aside>
 
         <!-- Main Content -->
@@ -165,4 +165,4 @@ require dirname(__DIR__) . '/includes/header.php';
     </div>
 </div>
 
-<?php require dirname(__DIR__) . '/includes/footer.php'; ?>
+<?php require __DIR__ . '/includes/footer.php'; ?>
